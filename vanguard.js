@@ -285,99 +285,63 @@ this._W(sx,sy,sz,rw,.35,rd,c);
 }
 };
 VG.prototype._buildArena=function(){
-/* COMPETITIVE TILE BLOCKOUT V3 — deterministic layout, no fake passages, no trap pits, clear 3-route flow. */
-var W=0x1b2a38,C=0x244055,CR=0x335a74,RM=0x2e6a90;
-var tile=3;
-var layout=[
-'#######################',
-'#A....#.....#.....#..B#',
-'#.###.#.===.#.===.#.###',
-'#.....#.....#.....#...#',
-'#.###.#####.#.#####.#.#',
-'#...#.....#.#.#.....#.#',
-'###.#.===.#.#.#.===.#.#',
-'#...#.....#...#.....#.#',
-'#.#####.####^####.#####',
-'#.....#...F...#...#...#',
-'#.===.#.#####.#.===.#.#',
-'#.....#..H.H..#.....#.#',
-'#####.###...###.#####.#',
-'#.....#..H.H..#.....#.#',
-'#.===.#.#####.#.===.#.#',
-'#...#...F...#...#.....#',
-'#####.####^####.#####.#',
-'#.#.....#...#.....#...#',
-'#.#.===.#.#.#.===.#.###',
-'#.#.....#.#.#.....#...#',
-'#.#####.#.#####.###.#.#',
-'#...#.....#.....#....B#',
-'#######################'
-];
-var rows=layout.length,cols=layout[0].length;
-var halfW=cols*tile*.5,halfH=rows*tile*.5;
-this.mapHalf=Math.max(34,Math.ceil(Math.max(halfW,halfH))+2);
-this.spawnNodes={player:[],enemy:[],high:[],patrol:[],flank:[]};
-
-// global safety floor + border shell
-this._D(0,.02,0,cols*tile+8,.04,rows*tile+8,0x0f1823,0x001422);
-this._W(0,4,-halfH-1,cols*tile+8,8,2,W);this._W(0,4,halfH+1,cols*tile+8,8,2,W);
-this._W(-halfW-1,4,0,2,8,rows*tile+8,W);this._W(halfW+1,4,0,2,8,rows*tile+8,W);
-
-var walk=[];
-var toWorld=function(tx,tz){return{x:(tx-cols/2+0.5)*tile,z:(tz-rows/2+0.5)*tile};};
-for(var z=0;z<rows;z++){
-for(var x=0;x<cols;x++){
-var ch=layout[z].charAt(x);var p=toWorld(x,z);
-if(ch!=='#'){
-  walk.push([p.x,p.z]);
-  this._D(p.x,.03,p.z,tile,.05,tile,0x111c28,0x001a2a);
+/* KRUNKER-STYLE COMPACT PVP ARENA — sealed geometry, deliberate lanes, strong spawn bunkers. */
+var W=0x1d2a38,C=0x253749,CR=0x334f66,RM=0x2f6282,FL=0x0c141d;
+this.mapHalf=34;
+this.spawnNodes={
+player:[[-29,-25],[-27,-21],[-25,-26],[29,25],[27,21],[25,26],[-29,25],[-27,21],[29,-25],[27,-21]],
+enemy:[[29,25],[27,21],[25,26],[-29,-25],[-27,-21],[-25,-26],[29,-25],[27,-21],[-29,25],[-27,21]],
+high:[[-8,8],[8,-8],[-8,-8],[8,8],[0,0]],
+patrol:[[-28,-24],[-28,-12],[-28,0],[-28,12],[-28,24],[-18,-24],[-18,-12],[-18,0],[-18,12],[-18,24],[-8,-24],[-8,-12],[-8,0],[-8,12],[-8,24],[0,-24],[0,-12],[0,0],[0,12],[0,24],[8,-24],[8,-12],[8,0],[8,12],[8,24],[18,-24],[18,-12],[18,0],[18,12],[18,24],[28,-24],[28,-12],[28,0],[28,12],[28,24]],
+flank:[[-24,-6],[-24,6],[24,-6],[24,6],[-6,-24],[6,-24],[-6,24],[6,24],[-16,16],[16,16],[-16,-16],[16,-16]]
+};
+var perimeter=68;
+this._W(0,4,-34,perimeter,8,2,W);this._W(0,4,34,perimeter,8,2,W);this._W(-34,4,0,2,8,perimeter,W);this._W(34,4,0,2,8,perimeter,W);
+this._D(0,.02,0,66,.03,66,0x101a24,0x001726);
+// outer ring blockers to prevent fake passages
+for(var i=-24;i<=24;i+=12){
+this._W(i,1.8,-28,6,3.6,2,C);this._W(i,1.8,28,6,3.6,2,C);
+this._W(-28,1.8,i,2,3.6,6,C);this._W(28,1.8,i,2,3.6,6,C);
 }
-if(ch==='#'){
-  this._W(p.x,1.8,p.z,tile,3.6,tile,W);
-}else if(ch==='='){
-  this._W(p.x,.9,p.z,tile*.84,1.8,tile*.84,CR);
-}else if(ch==='^'){
-  this._W(p.x,1.5,p.z,tile,3,tile,C);
-  this._addRamp(p.x-tile*1.4,p.z,p.x,p.z,1.5,tile*.9,RM);
-  this._addRamp(p.x+tile*1.4,p.z,p.x,p.z,1.5,tile*.9,RM);
-  this.spawnNodes.high.push([p.x,p.z]);
-}else if(ch==='A'){
-  this.spawnNodes.player.push([p.x,p.z]);
-  // spawn pocket with broken LOS and two exits
-  this._W(p.x-tile*1.1,1.6,p.z,1.2,3.2,tile*1.9,W);
-  this._W(p.x,1.6,p.z-tile*1.1,tile*1.9,3.2,1.2,W);
-  this._W(p.x+tile*.6,1.0,p.z+tile*.2,1.2,2.0,1.2,CR);
-}else if(ch==='B'){
-  this.spawnNodes.enemy.push([p.x,p.z]);
-  this._W(p.x+tile*1.1,1.6,p.z,1.2,3.2,tile*1.9,W);
-  this._W(p.x,1.6,p.z+tile*1.1,tile*1.9,3.2,1.2,W);
-  this._W(p.x-tile*.6,1.0,p.z-tile*.2,1.2,2.0,1.2,CR);
-}else if(ch==='F'){
-  this.spawnNodes.flank.push([p.x,p.z]);
-  this._W(p.x,.8,p.z,tile*.6,1.6,tile*.6,0x2b4d67);
-}else if(ch==='H'){
-  this.spawnNodes.high.push([p.x,p.z]);
-  this._W(p.x,1.1,p.z,tile*.8,2.2,tile*.8,0x29445d);
+// three-lane skeleton (north / mid / south) with clear intersections
+this._W(0,1.7,-18,58,3.4,2,W);
+this._W(0,1.7,18,58,3.4,2,W);
+this._W(-18,1.7,0,2,3.4,58,W);
+this._W(18,1.7,0,2,3.4,58,W);
+// central combat block + upper ring
+this._W(0,1.4,0,8,2.8,8,0x20364a);
+this._W(0,3.3,0,12,1,12,0x25445e);
+this._W(0,4.25,0,6,0.9,6,0x1a2d3e);
+this._addStairs(-6.4,-10.2,0,1,8,2.2,RM);this._addStairs(6.4,10.2,0,-1,8,2.2,RM);
+this._addStairs(-10.2,6.4,1,0,8,2.2,RM);this._addStairs(10.2,-6.4,-1,0,8,2.2,RM);
+// structured buildings in corners: all fully sealed volumes
+var b=[[-22,-22,0x24465f],[-22,22,0x3b2a54],[22,-22,0x2d4a2a],[22,22,0x4a3821]];
+for(var bi=0;bi<b.length;bi++){
+var bx=b[bi][0],bz=b[bi][1],bc=b[bi][2];
+this._W(bx,2,bz,10,4,10,bc); // main mass
+this._W(bx,4.35,bz,6,0.7,6,CR); // roof cap
+this._W(bx+4.3,1,bz,1.4,2,4,0x131f2b); // doorway blocker to avoid ambiguous slit
+this._W(bx-4.3,1,bz,1.4,2,4,0x131f2b);
+}
+// corridor covers: symmetric and intentional
+for(var c=-21;c<=21;c+=7){
+if(c!==0){
+this._W(c,1,-9,2,2,2.2,CR);this._W(c,1,9,2,2,2.2,CR);
+this._W(-9,1,c,2.2,2,2,CR);this._W(9,1,c,2.2,2,2,CR);
 }
 }
-}
-
-// auto-generated patrol network from traversable cells (regular grid sampling)
-for(var i=0;i<walk.length;i++){
-var wx=walk[i][0],wz=walk[i][1];
-if(Math.round((wx+wz)/tile)%2===0)this.spawnNodes.patrol.push([wx,wz]);
-}
-// fallback node guarantees
-if(this.spawnNodes.flank.length<6){
-this.spawnNodes.flank.push([-12,0],[12,0],[0,-12],[0,12],[-9,9],[9,-9]);
-}
-if(this.spawnNodes.high.length<3)this.spawnNodes.high.push([0,0],[-6,6],[6,-6]);
-if(this.spawnNodes.player.length<4)this.spawnNodes.player.push([-halfW+6,-halfH+6],[-halfW+6,halfH-6]);
-if(this.spawnNodes.enemy.length<4)this.spawnNodes.enemy.push([halfW-6,halfH-6],[halfW-6,-halfH+6]);
-
-// visual lane guides
-for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*2){this._D(lx,.04,-halfH+tile*1.1,1.4,.04,.12,0x00a6ff);this._D(lx,.04,halfH-tile*1.1,1.4,.04,.12,0x6add59);} 
-for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*2){this._D(-halfW+tile*1.1,.04,lz,.12,.04,1.4,0xa76bff);this._D(halfW-tile*1.1,.04,lz,.12,.04,1.4,0xffb24a);} 
+// side catwalks + ramps (controlled verticality)
+this._W(-24,2.4,0,4,1,16,0x264860);this._W(24,2.4,0,4,1,16,0x264860);
+this._addRamp(-27,-8,-24,0,2.4,3.2,RM);this._addRamp(-27,8,-24,0,2.4,3.2,RM);
+this._addRamp(27,-8,24,0,2.4,3.2,RM);this._addRamp(27,8,24,0,2.4,3.2,RM);
+// protected spawn bunkers (hard LOS break at exit)
+this._W(-30,1.8,-24,2,3.6,12,W);this._W(-24,1.8,-30,12,3.6,2,W);this._W(-26,1.2,-23,4,2.4,2,CR);
+this._W(30,1.8,24,2,3.6,12,W);this._W(24,1.8,30,12,3.6,2,W);this._W(26,1.2,23,4,2.4,2,CR);
+this._W(-30,1.8,24,2,3.6,12,W);this._W(-24,1.8,30,12,3.6,2,W);this._W(-26,1.2,23,4,2.4,2,CR);
+this._W(30,1.8,-24,2,3.6,12,W);this._W(24,1.8,-30,12,3.6,2,W);this._W(26,1.2,-23,4,2.4,2,CR);
+// lane accents
+for(var lx=-27;lx<=27;lx+=6){this._D(lx,.04,-30,1.6,.04,.12,0x00a8ff);this._D(lx,.04,30,1.6,.04,.12,0x66dd55);}
+for(var lz=-27;lz<=27;lz+=6){this._D(-30,.04,lz,.12,.04,1.6,0xa76bff);this._D(30,.04,lz,.12,.04,1.6,0xffaa49);}
 };
 
 
