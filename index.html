@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PROJECT VANGUARD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="game-container"></div>
+
+<div id="ui-layer">
+
+  <!-- ════════════════ MAIN MENU ════════════════ -->
+  <div id="main-menu" class="screen active">
+
+    <!-- Top header bar -->
+    <div class="header">
+      <div class="logo">PROJECT<span>VANGUARD</span></div>
+      <div class="resources-bar">
+        <div class="res" title="Crédits de combat — gagnés en mission">
+          <span class="res-icon cred-icon">©</span>
+          <div class="res-info"><div class="res-label">CRÉDITS</div><div class="res-val" id="res-credits">0</div></div>
+        </div>
+        <div class="res" title="Cristaux rares — pour boosts premium">
+          <span class="res-icon crys-icon">◆</span>
+          <div class="res-info"><div class="res-label">CRISTAUX</div><div class="res-val" id="res-crystals">0</div></div>
+        </div>
+        <div class="res" title="Pièces d'armement — boosts &amp; crafting">
+          <span class="res-icon part-icon">⚙</span>
+          <div class="res-info"><div class="res-label">PIÈCES</div><div class="res-val" id="res-parts">0</div></div>
+        </div>
+        <div class="res res-token" title="Tokens Vanguard — monnaie premium">
+          <span class="res-icon tok-icon">★</span>
+          <div class="res-info"><div class="res-label">TOKENS</div><div class="res-val" id="res-tokens">0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main layout -->
+    <div class="menu-layout">
+
+      <!-- Left: Navigation -->
+      <div class="side-nav">
+        <button class="nav-btn primary" onclick="app.startMatch('survival')">
+          <span class="btn-icon">▶</span> SURVIE — MODE PRINCIPAL
+        </button>
+        <button class="nav-btn nav-btn-training" onclick="app.startMatch('training')">
+          <span class="btn-icon">◐</span> ENTRAÎNEMENT (PRATIQUE)
+        </button>
+        <button class="nav-btn" onclick="app.showScreen('loadout')">
+          <span class="btn-icon">◈</span> CLASSES &amp; LOADOUT
+        </button>
+        <button class="nav-btn" onclick="app.showScreen('shop')">
+          <span class="btn-icon">◉</span> ARMURERIE
+        </button>
+        <button class="nav-btn" onclick="app.showScreen('boosts')">
+          <span class="btn-icon">⬆</span> BOOSTS DE MISSION
+        </button>
+        <button class="nav-btn" onclick="app.showScreen('skins')">
+          <span class="btn-icon">◎</span> SKINS &amp; SPIN
+        </button>
+        <button class="nav-btn secondary" onclick="app._showTut()">
+          <span class="btn-icon">?</span> GUIDE DE MISSION
+        </button>
+      </div>
+
+      <!-- Center: Active class info -->
+      <div class="center-panel">
+        <div class="class-showcase">
+          <div class="class-label">CLASSE ACTIVE</div>
+          <div class="class-name" id="current-class-display">SOLDIER</div>
+          <div class="class-weapon" id="current-weapon-display">ASSAULT RIFLE</div>
+          <div class="class-flavor" id="current-class-desc">Balanced — AR + medium armor</div>
+        </div>
+      </div>
+
+      <!-- Right: Player profile / progression -->
+      <div class="profile-panel">
+        <div class="profile-title">DOSSIER AGENT</div>
+
+        <div class="profile-level">
+          <div class="level-circle">
+            <span class="level-num" id="menu-level">1</span>
+            <span class="level-lbl">NVL</span>
+          </div>
+          <div class="level-info">
+            <div class="xp-label">EXPÉRIENCE</div>
+            <div class="xp-values"><span id="menu-xp-cur">0</span> / <span id="menu-xp-next">100</span> XP</div>
+            <div class="xp-bar-bg"><div class="xp-bar-fill" id="menu-xp-bar"></div></div>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat-row">
+            <span class="stat-label">ÉLIMINATIONS TOTALES</span>
+            <span class="stat-val" id="menu-kills">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">PROGRESSION</span>
+            <span class="stat-val">ACTIF</span>
+          </div>
+        </div>
+
+        <div class="profile-missions">
+          <div class="mission-title">OBJECTIFS</div>
+          <div id="objectives-list"></div>
+        </div>
+      </div>
+
+    </div><!-- /menu-layout -->
+  </div><!-- /main-menu -->
+
+  <!-- ════════════════ LOADOUT ════════════════ -->
+  <div id="loadout-screen" class="screen hidden backdrop-blur">
+    <div class="inner-header">
+      <h2>◈ SÉLECTION DE CLASSE</h2>
+      <p>Choisissez votre rôle sur le champ de bataille. Déverrouillez les classes avec des Tokens.</p>
+    </div>
+    <div class="grid-container" id="classes-grid"></div>
+    <button class="back-btn" onclick="app.showScreen('menu')">← RETOUR AU QG</button>
+  </div>
+
+  <!-- ════════════════ SHOP / ARMURERIE ════════════════ -->
+  <div id="shop-screen" class="screen hidden backdrop-blur">
+    <div class="inner-header">
+      <h2>◉ ARMURERIE VANGUARD</h2>
+      <p>Échangez vos © Crédits contre des ★ Tokens. Utilisez les Tokens pour débloquer des classes et des skins !</p>
+    </div>
+    <div class="grid-container" id="shop-grid"></div>
+    <button class="back-btn" onclick="app.showScreen('menu')">← RETOUR AU QG</button>
+  </div>
+
+  <!-- ════════════════ BOOSTS ════════════════ -->
+  <div id="boosts-screen" class="screen hidden backdrop-blur">
+    <div class="inner-header">
+      <h2>⬆ BOOSTS DE MISSION</h2>
+      <p>Achetez des boosts temporaires avec ◆ Cristaux ou ⚙ Pièces. Actifs pour 1 match uniquement !</p>
+    </div>
+    <div class="boosts-active-bar" id="active-boosts-list"></div>
+    <div class="grid-container" id="boosts-grid"></div>
+    <button class="back-btn" onclick="app.showScreen('menu')">← RETOUR AU QG</button>
+  </div>
+
+  <!-- ════════════════ SKINS & SPIN ════════════════ -->
+  <div id="skins-screen" class="screen hidden backdrop-blur">
+    <div class="inner-header">
+      <h2>◎ PERSONNALISATION &amp; MARCHÉ</h2>
+      <p>Équipez vos skins, vendez vos doublons et tentez le SPIN VANGUARD pour décrocher des skins ULTIMES !</p>
+    </div>
+    <div class="skins-layout">
+      <div class="skins-grid-wrap">
+        <div id="skin-equipped" class="skin-equipped"></div>
+        <div class="grid-container" id="skins-grid"></div>
+      </div>
+      <div class="spin-section">
+        <div class="spin-box">
+          <div class="spin-title">SPIN VANGUARD</div>
+          <div class="spin-cost">★ 50 TOKENS</div>
+          <div class="spin-display" id="spin-display">?</div>
+          <div class="spin-rarity" id="spin-rarity"></div>
+          <button class="spin-btn" id="spin-btn" onclick="app.doSpin()">LANCER LE SPIN</button>
+          <div class="spin-rates">
+            <div>COMMUN 60% · RARE 25% · ÉPIQUE 10%</div>
+            <div>MYTHIQUE 4% · LÉGENDAIRE 0.99%</div>
+            <div class="ult-rate">★ ULTIME 0.01% ★</div>
+          </div>
+        </div>
+        <div class="market-info">
+          <div class="market-title">MARCHÉ — VENTE DOUBLONS</div>
+          <div class="market-row"><span>Commun</span><span>★ 2</span></div>
+          <div class="market-row"><span>Rare</span><span>★ 6</span></div>
+          <div class="market-row"><span>Épique</span><span>★ 14</span></div>
+          <div class="market-row"><span>Mythique</span><span>★ 35</span></div>
+          <div class="market-row"><span>Légendaire</span><span>★ 80</span></div>
+          <div class="market-row ult-row"><span>Ultime</span><span>★ 300</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="back-btn" onclick="app.showScreen('menu')">← RETOUR AU QG</button>
+  </div>
+
+  <!-- ════════════════ HUD ════════════════ -->
+  <div id="hud" class="screen hidden">
+    <div id="crosshair"></div>
+
+    <!-- Top bar -->
+    <div class="hud-top">
+      <div class="hud-badge hud-badge-lvl">NVL <span id="hud-lvl">1</span></div>
+      <div class="hud-badge hud-badge-kills">✕ <span id="hud-kills">0</span></div>
+      <div class="hud-badge hud-badge-mode" id="hud-mode-badge">ENTRAÎNEMENT</div>
+    </div>
+
+    <!-- Wave indicator (Survival only) -->
+    <div id="hud-wave" class="hud-wave hidden">
+      <div class="wave-label">VAGUE</div>
+      <div class="wave-num" id="hud-wave-num">1</div>
+      <div class="wave-remain"><span id="hud-wave-remain">0</span> ENNEMIS</div>
+    </div>
+
+    <!-- Wave banner (announces new wave) -->
+    <div id="wave-banner" class="wave-banner"></div>
+
+    <!-- Active boosts display -->
+    <div id="hud-boosts"></div>
+
+    <!-- Damage numbers container -->
+    <div id="dmg-numbers"></div>
+
+    <!-- Bottom panels -->
+    <div class="hud-bottom">
+      <div class="health-panel">
+        <div class="hp-label">INTÉGRITÉ</div>
+        <div class="hp-value" id="hud-hp">100</div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill" id="hud-hp-bar"></div></div>
+      </div>
+      <div class="hud-center-controls">
+        <div class="ctrl-hint">WASD · ESPACE · R · CLIC</div>
+      </div>
+      <div class="ammo-panel">
+        <div class="ammo-weapon" id="hud-weapon-name">ASSAULT RIFLE</div>
+        <div class="ammo-value" id="hud-ammo">30</div>
+        <div class="ammo-reserve">/ <span id="hud-reserve">120</span></div>
+      </div>
+    </div>
+
+    <div id="hit-marker"></div>
+    <div id="kill-reward"></div>
+    <div id="damage-overlay"></div>
+    <div id="level-up-banner"></div>
+
+    <!-- Sniper scope overlay -->
+    <div id="sniper-scope">
+      <div class="scope-circle">
+        <div class="scope-cross-h"></div>
+        <div class="scope-cross-v"></div>
+        <div class="scope-mil-l"></div>
+        <div class="scope-mil-r"></div>
+        <div class="scope-mil-t"></div>
+        <div class="scope-mil-b"></div>
+        <div class="scope-center"></div>
+      </div>
+      <div class="scope-mask scope-mask-l"></div>
+      <div class="scope-mask scope-mask-r"></div>
+      <div class="scope-mask scope-mask-t"></div>
+      <div class="scope-mask scope-mask-b"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ PAUSE / GAME OVER ════════════════ -->
+  <div id="pause-overlay" class="screen hidden backdrop-blur center-flex">
+    <div class="pause-box">
+      <div class="pause-icon">⊘</div>
+      <h1 id="pause-title">MISSION SUSPENDUE</h1>
+      <p id="pause-sub">Cliquez sur l'écran pour reprendre le contrôle</p>
+      <button class="nav-btn quit-btn" onclick="app.quitMatch()">⬡ ABANDONNER LA MISSION</button>
+    </div>
+  </div>
+
+  <!-- ════════════════ TUTORIAL ════════════════ -->
+  <div id="tutorial-overlay" class="screen hidden backdrop-blur center-flex">
+    <div class="tutorial-box">
+      <div class="tuto-header">
+        <div class="tuto-logo">PROJECT<span>VANGUARD</span></div>
+        <div class="tuto-sub">GUIDE OPÉRATIONNEL</div>
+      </div>
+
+      <div class="tuto-grid">
+        <div class="tuto-block">
+          <div class="tuto-icon">🎮</div>
+          <div class="tuto-title">CONTRÔLES</div>
+          <ul>
+            <li><kbd>W/A/S/D</kbd> — Déplacement</li>
+            <li><kbd>ESPACE</kbd> — Sauter</li>
+            <li><kbd>SHIFT</kbd> — S'accroupir</li>
+            <li><kbd>CTRL</kbd> ou <kbd>E</kbd> — Dash (cooldown 1.4s)</li>
+            <li><kbd>CLIC G</kbd> — Tirer · <kbd>CLIC D</kbd> — Viser (ADS)</li>
+            <li><kbd>R</kbd> — Recharger</li>
+          </ul>
+        </div>
+        <div class="tuto-block">
+          <div class="tuto-icon">🎯</div>
+          <div class="tuto-title">OBJECTIF</div>
+          <ul>
+            <li><strong>SURVIE</strong> — vagues progressives, mode principal</li>
+            <li><strong>ENTRAÎNEMENT</strong> — pratique libre / sandbox</li>
+            <li>Survivez plus longtemps = meilleures récompenses</li>
+            <li>HP se régénère hors combat</li>
+          </ul>
+        </div>
+        <div class="tuto-block">
+          <div class="tuto-icon">💰</div>
+          <div class="tuto-title">ÉCONOMIE</div>
+          <ul>
+            <li><span class="cred-c">©</span> Crédits — gagnés par élimination</li>
+            <li><span class="tok-c">★</span> Tokens — +5 par niveau, ou achat via Crédits</li>
+            <li><span class="crys-c">◆</span> Cristaux — drops rares → achètent des Boosts</li>
+            <li><span class="part-c">⚙</span> Pièces — drops d'élimination → achètent des Boosts</li>
+          </ul>
+        </div>
+        <div class="tuto-block">
+          <div class="tuto-icon">⬆</div>
+          <div class="tuto-title">BOOSTS &amp; PROGRESSION</div>
+          <ul>
+            <li>Boosts temporaires (1 match)</li>
+            <li>+30% dégâts, +50% HP, +20% vitesse...</li>
+            <li>Objectifs dynamiques → récompenses</li>
+            <li>Armurerie : © Crédits → ★ Tokens</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tuto-enemies">
+        <div class="tuto-title" style="text-align:center;margin-bottom:10px">TYPES D'ENNEMIS</div>
+        <div class="enemy-types">
+          <div class="enemy-type"><span class="e-dot" style="background:#44aaff"></span><strong>AR BOT</strong> (bleu) — Fusil d'assaut · portée moyenne · 18 CR</div>
+          <div class="enemy-type"><span class="e-dot" style="background:#44ff88"></span><strong>SMG BOT</strong> (vert) — SMG · rapide, courte portée · 15 CR</div>
+          <div class="enemy-type"><span class="e-dot" style="background:#ff6622"></span><strong>SHOTGUN BOT</strong> (rouge) — Fusil à pompe · rush CQC · 22 CR</div>
+          <div class="enemy-type"><span class="e-dot" style="background:#cc44ff"></span><strong>SNIPER BOT</strong> (violet) — Sniper · longue portée, lent · 25 CR</div>
+        </div>
+      </div>
+
+      <div class="tuto-enemies" style="margin-bottom:24px">
+        <div class="tuto-title" style="text-align:center;margin-bottom:10px">COMBAT</div>
+        <div class="enemy-types">
+          <div class="enemy-type" style="flex:1;justify-content:center"><strong style="color:#ff2222">HEADSHOTS</strong> — x1.8 dégâts · affichés en ROUGE</div>
+          <div class="enemy-type" style="flex:1;justify-content:center"><strong style="color:#ffcc00">DISTANCE</strong> — dégâts varient selon la portée</div>
+        </div>
+      </div>
+
+      <button class="tuto-start-btn" onclick="app.closeTutorial()">COMPRIS — DÉMARRER ▶</button>
+    </div>
+  </div>
+
+  <!-- Banners -->
+  <div id="error-banner" class="banner banner-error"></div>
+
+</div><!-- /ui-layer -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="vanguard.js"></script>
+</body>
+</html>
