@@ -1070,3 +1070,9 @@ kbd {
 .spin-display {
     transition: box-shadow 0.3s, color 0.2s, border-color 0.2s;
 }
+
+.skin-custom-block{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)}
+.sc-title{font-size:.72rem;letter-spacing:1.4px;color:#86a8be;margin:5px 0;text-transform:uppercase}
+.sc-row{display:flex;flex-wrap:wrap;gap:6px}
+.sc-row button{border:1px solid rgba(255,255,255,.2);background:rgba(8,14,22,.75);color:#cfe3ef;padding:5px 8px;font-family:'Rajdhani',sans-serif;font-size:.8rem;cursor:pointer}
+.sc-row button.sel{border-color:#00e5ff;color:#fff;background:rgba(0,229,255,.18);box-shadow:0 0 10px rgba(0,229,255,.25)}
