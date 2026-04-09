@@ -1,4 +1,4 @@
-var DATA={weapons:{'Assault Rifle':{dmg:28,fireRate:.12,mag:30,reload:1.5,color:0x445566,spread:.015,auto:true,range:[0,30,60],falloff:[1,.78,.42]},'SMG':{dmg:18,fireRate:.07,mag:40,reload:1.2,color:0x334455,spread:.025,auto:true,range:[0,22,45],falloff:[1,.65,.3]},'Shotgun':{dmg:55,fireRate:.8,mag:8,reload:2,color:0x223344,spread:.08,auto:false,pellets:5,range:[0,10,22],falloff:[1,.35,.08]},'Sniper':{dmg:120,fireRate:1.5,mag:5,reload:2.5,color:0x111111,spread:.002,auto:false,range:[0,50,120],falloff:[.6,1,1]},'Minigun':{dmg:20,fireRate:.06,mag:100,reload:3,color:0x554422,spread:.03,auto:true,range:[0,25,50],falloff:[1,.6,.25]},'Plasma Rifle':{dmg:35,fireRate:.2,mag:20,reload:2,color:0x002244,spread:.008,auto:true,range:[0,35,70],falloff:[1,.8,.5]}},classes:{'Soldier':{hp:100,speed:9.8,weapon:'Assault Rifle',cost:0,color:0x2244aa,desc:'Balanced — AR + medium armor'},'Scout':{hp:75,speed:13.2,weapon:'SMG',cost:15,color:0x22aa44,desc:'Fast + light — SMG specialist'},'Heavy':{hp:200,speed:6,weapon:'Minigun',cost:25,color:0xaa4422,desc:'Tank — Minigun + max HP'},'Sniper':{hp:80,speed:8.8,weapon:'Sniper',cost:20,color:0x555555,desc:'Long range — 1 shot 1 kill'},'Breacher':{hp:110,speed:8.9,weapon:'Shotgun',cost:20,color:0xaa8822,desc:'CQC specialist — Shotgun'},'Phantom':{hp:85,speed:11,weapon:'Plasma Rifle',cost:35,color:0x4400aa,desc:'Energy weapons — plasma tech'}},
+var DATA={weapons:{'Assault Rifle':{dmg:28,fireRate:.12,mag:30,reload:1.5,color:0x445566,spread:.015,auto:true,range:[0,30,60],falloff:[1,.78,.42]},'SMG':{dmg:18,fireRate:.07,mag:40,reload:1.2,color:0x334455,spread:.025,auto:true,range:[0,22,45],falloff:[1,.65,.3]},'Shotgun':{dmg:55,fireRate:.8,mag:8,reload:2,color:0x223344,spread:.08,auto:false,pellets:5,range:[0,10,22],falloff:[1,.35,.08]},'Sniper':{dmg:120,fireRate:1.5,mag:5,reload:2.5,color:0x111111,spread:.002,auto:false,range:[0,50,120],falloff:[.6,1,1]},'Minigun':{dmg:20,fireRate:.06,mag:100,reload:3,color:0x554422,spread:.03,auto:true,range:[0,25,50],falloff:[1,.6,.25]},'Plasma Rifle':{dmg:35,fireRate:.2,mag:20,reload:2,color:0x002244,spread:.008,auto:true,range:[0,35,70],falloff:[1,.8,.5]}},classes:{'Soldier':{hp:100,speed:8.4,weapon:'Assault Rifle',cost:0,color:0x2244aa,desc:'Balanced — AR + medium armor'},'Scout':{hp:75,speed:10.6,weapon:'SMG',cost:15,color:0x22aa44,desc:'Fast + light — SMG specialist'},'Heavy':{hp:200,speed:5.5,weapon:'Minigun',cost:25,color:0xaa4422,desc:'Tank — Minigun + max HP'},'Sniper':{hp:80,speed:7.7,weapon:'Sniper',cost:20,color:0x555555,desc:'Long range — 1 shot 1 kill'},'Breacher':{hp:110,speed:7.9,weapon:'Shotgun',cost:20,color:0xaa8822,desc:'CQC specialist — Shotgun'},'Phantom':{hp:85,speed:9.2,weapon:'Plasma Rifle',cost:35,color:0x4400aa,desc:'Energy weapons — plasma tech'}},
 skins:[
 {id:'default',name:'STANDARD',rarity:'common',color:0x4488cc,accent:0x00e5ff,emissive:0x002244,glow:.25,mat:'matte',pattern:'solid',tracer:0xffdd44},
 {id:'crimson',name:'CRIMSON OPS',rarity:'common',color:0xaa2222,accent:0xff4444,emissive:0x330000,glow:.3,mat:'matte',pattern:'stripe',tracer:0xff4444},
@@ -24,14 +24,15 @@ skinSell:{common:2,rare:6,epic:14,mythic:35,legendary:80,ultimate:300},
 skinDropRates:{common:0.6,rare:0.25,epic:0.10,mythic:0.04,legendary:0.0099,ultimate:0.0001},
 rarityLabel:{common:'COMMUN',rare:'RARE',epic:'\u00c9PIQUE',mythic:'MYTHIQUE',legendary:'L\u00c9GENDAIRE',ultimate:'ULTIME'},
 rarityColor:{common:'#8899aa',rare:'#aa88ff',epic:'#ff8800',mythic:'#22ddff',legendary:'#ffcc00',ultimate:'#ff00ff'},
+skinPalettes:[{id:'default',name:'Neutral',bodyMul:1,accentMul:1,emissiveMul:1},{id:'ember',name:'Ember',bodyTint:0x281100,accentTint:0xff6a00,emissiveTint:0xff4400,bodyMul:.85,accentMul:1.15,emissiveMul:1.2},{id:'aqua',name:'Aqua',bodyTint:0x001f2f,accentTint:0x00d7ff,emissiveTint:0x00aaff,bodyMul:.95,accentMul:1.1,emissiveMul:1.15},{id:'violet',name:'Violet',bodyTint:0x20002d,accentTint:0xb84dff,emissiveTint:0xd04dff,bodyMul:.95,accentMul:1.08,emissiveMul:1.12},{id:'lime',name:'Lime',bodyTint:0x0d2500,accentTint:0xa8ff4a,emissiveTint:0x55ff66,bodyMul:.92,accentMul:1.08,emissiveMul:1.08}],
 tokenShop:[{id:'tok_sm',name:'5 TOKENS',price:100,gives:5},{id:'tok_md',name:'15 TOKENS',price:250,gives:15},{id:'tok_lg',name:'35 TOKENS',price:500,gives:35},{id:'tok_xl',name:'80 TOKENS',price:1000,gives:80},{id:'tok_xxl',name:'200 TOKENS',price:2000,gives:200}],
 boosts:[{id:'dmg_boost',name:'SURCHARGE',desc:'+30% d\u00e9g\u00e2ts (1 match)',cost:10,cur:'crystals',fx:'dmg'},{id:'armor_boost',name:'BLINDAGE',desc:'+50% HP max (1 match)',cost:12,cur:'crystals',fx:'armor'},{id:'speed_boost',name:'ADR\u00c9NALINE',desc:'+20% vitesse (1 match)',cost:15,cur:'parts',fx:'speed'},{id:'regen_boost',name:'NANO-REGEN',desc:'R\u00e9g\u00e9n rapide (1 match)',cost:20,cur:'parts',fx:'regen'},{id:'ammo_boost',name:'ARSENAL',desc:'Triple munitions (1 match)',cost:8,cur:'crystals',fx:'ammo'},{id:'loot_boost',name:'FORTUNE',desc:'+100% r\u00e9compenses (1 match)',cost:25,cur:'parts',fx:'loot'}],
 /* Bot weapon configs — bots use the same weapon categories as the player */
 botTypes:[
-{name:'AR BOT',weapon:'Assault Rifle',hp:80,speed:5.5,fireRate:0.7,baseDmg:14,projSpeed:32,projSize:.12,projColor:0x44aaff,
+{name:'AR BOT',weapon:'Assault Rifle',hp:80,speed:5.9,fireRate:0.7,baseDmg:14,projSpeed:32,projSize:.12,projColor:0x44aaff,
  hc:0x2255aa,ac:0x1a4488,lc:0x0d2255,vc:0x44ccff,xc:0x2288ff,
  idealDist:18,minDist:8,spread:.06,cr:18,xp:40},
-{name:'SMG BOT',weapon:'SMG',hp:55,speed:8,fireRate:0.3,baseDmg:8,projSpeed:30,projSize:.08,projColor:0x44ff88,
+{name:'SMG BOT',weapon:'SMG',hp:55,speed:8.3,fireRate:0.3,baseDmg:8,projSpeed:30,projSize:.08,projColor:0x44ff88,
  hc:0x22aa44,ac:0x118833,lc:0x0a5522,vc:0x66ffaa,xc:0x44dd66,
  idealDist:12,minDist:5,spread:.1,cr:15,xp:35},
 {name:'SHOTGUN BOT',weapon:'Shotgun',hp:130,speed:6,fireRate:1.1,baseDmg:22,projSpeed:26,projSize:.15,projColor:0xff6622,
@@ -69,11 +70,13 @@ this._smMx=0;this._smMy=0;
 this.mK=0;this.mXP=0;this._spin=false;
 this.activeBoosts=[];
 this.modeDefs={
-training:{id:'training',label:'ENTRAÎNEMENT',desc:'Pratique libre avec pression réduite',theme:'training',initialBots:8,respawn:true,respawnDelay:1.4,botSpeedMul:.92,botRangeMul:.9,botAggro:.92,botDamageMul:.9,showHpBars:true},
-survival:{id:'survival',label:'SURVIE',desc:'Vagues progressives et gestion de ressources',theme:'survival',waves:true,showHpBars:false},
-deathmatch:{id:'deathmatch',label:'MATCH À MORT',desc:'Atteignez 35 éliminations le plus vite possible',theme:'training',initialBots:10,respawn:true,respawnDelay:.95,botSpeedMul:.98,botRangeMul:1,botAggro:1,botDamageMul:1,killTarget:35,showHpBars:true},
-assault:{id:'assault',label:'ASSAUT',desc:'Affrontement soutenu contre des bots agressifs',theme:'survival',initialBots:12,respawn:true,respawnDelay:.85,botSpeedMul:1.08,botRangeMul:1.12,botAggro:1.08,botDamageMul:1.12,showHpBars:false},
-domination:{id:'domination',label:'DOMINATION',desc:'Contrôlez la zone centrale pour marquer 100 points',theme:'training',initialBots:10,respawn:true,respawnDelay:1.1,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,domination:true,scoreTarget:100,showHpBars:true}
+training:{id:'training',label:'ENTRAÎNEMENT',desc:'Routes guidées et pression réduite',theme:'training',initialBots:8,respawn:true,respawnDelay:1.5,botSpeedMul:.9,botRangeMul:.88,botAggro:.9,botDamageMul:.9,showHpBars:true},
+survival:{id:'survival',label:'SURVIE',desc:'Vagues progressives dans des couloirs fermés',theme:'survival',waves:true,showHpBars:false},
+survival_plus:{id:'survival_plus',label:'SURVIE+',desc:'Vagues élites plus denses et rotations forcées',theme:'survival',waves:true,showHpBars:false,botSpeedMul:1.08,botRangeMul:1.12,botAggro:1.14,botDamageMul:1.12},
+deathmatch:{id:'deathmatch',label:'MATCH À MORT',desc:'Atteignez 35 éliminations',theme:'training',initialBots:10,respawn:true,respawnDelay:1.05,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,killTarget:35,showHpBars:true},
+teamdm:{id:'teamdm',label:'TEAM DEATHMATCH',desc:'Course au score : Vanguard vs bots',theme:'training',initialBots:12,respawn:true,respawnDelay:.9,botSpeedMul:1.02,botRangeMul:1.03,botAggro:1.05,botDamageMul:1,teamBattle:true,scoreTarget:45,showHpBars:true},
+assault:{id:'assault',label:'ASSAUT',desc:'Affrontement soutenu contre des bots agressifs',theme:'survival',initialBots:12,respawn:true,respawnDelay:.8,botSpeedMul:1.12,botRangeMul:1.12,botAggro:1.1,botDamageMul:1.12,showHpBars:false},
+domination:{id:'domination',label:'DOMINATION',desc:'Contrôlez l’atrium central pour marquer 100 points',theme:'training',initialBots:10,respawn:true,respawnDelay:1.1,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,domination:true,scoreTarget:100,showHpBars:true}
 };
 this.gameMode='training';
 this.modeScore={player:0,bots:0};
@@ -86,12 +89,12 @@ this.loop();
 }
 /* SAVE */
 VG.prototype.loadSave=function(){
-var d={resources:{credits:0,crystals:0,parts:0,tokens:5},unlockedClasses:['Soldier'],selectedClass:'Soldier',stats:{kills:0,level:1,xp:0,matchesCompleted:0,totalCreditsEarned:0},upgrades:{},ownedSkins:{'default':1},selectedSkin:'default',purchasedBoosts:[],objectives:null,firstTime:true};
+var d={resources:{credits:0,crystals:0,parts:0,tokens:5},unlockedClasses:['Soldier'],selectedClass:'Soldier',stats:{kills:0,level:1,xp:0,matchesCompleted:0,totalCreditsEarned:0},upgrades:{},ownedSkins:{'default':1},selectedSkin:'default',skinCustom:{palette:'default',finish:'matte'},purchasedBoosts:[],objectives:null,firstTime:true};
 try{var s=localStorage.getItem('vg_s5');if(s){var p=JSON.parse(s);
 var os=p.ownedSkins||d.ownedSkins;
 if(Array.isArray(os)){var m={};for(var ii=0;ii<os.length;ii++)m[os[ii]]=1;os=m;}
 if(!os['default'])os['default']=1;
-return{resources:Object.assign({},d.resources,p.resources),unlockedClasses:p.unlockedClasses||d.unlockedClasses,selectedClass:p.selectedClass||d.selectedClass,stats:Object.assign({},d.stats,p.stats),upgrades:Object.assign({},d.upgrades,p.upgrades),ownedSkins:os,selectedSkin:p.selectedSkin||d.selectedSkin,purchasedBoosts:p.purchasedBoosts||[],objectives:p.objectives||null,firstTime:p.firstTime!==undefined?p.firstTime:d.firstTime};}return d;}catch(e){return d;}
+return{resources:Object.assign({},d.resources,p.resources),unlockedClasses:p.unlockedClasses||d.unlockedClasses,selectedClass:p.selectedClass||d.selectedClass,stats:Object.assign({},d.stats,p.stats),upgrades:Object.assign({},d.upgrades,p.upgrades),ownedSkins:os,selectedSkin:p.selectedSkin||d.selectedSkin,skinCustom:Object.assign({},d.skinCustom,p.skinCustom),purchasedBoosts:p.purchasedBoosts||[],objectives:p.objectives||null,firstTime:p.firstTime!==undefined?p.firstTime:d.firstTime};}return d;}catch(e){return d;}
 };
 VG.prototype.save=function(){try{localStorage.setItem('vg_s5',JSON.stringify(this.sd));}catch(e){}};
 VG.prototype.getLvlXP=function(l){if(l<=11)return DATA.xpTable[Math.min(l-1,DATA.xpTable.length-1)]||0;return 4000+(l-11)*500;};
@@ -282,69 +285,39 @@ this._W(sx,sy,sz,rw,.35,rd,c);
 }
 };
 VG.prototype._buildArena=function(){
-/* CLEAN FPS-FRIENDLY ARENA — designed from ground level, not top-down.
-   No overlapping geometry. All ramps lead somewhere. Bots can navigate everywhere. */
-var W=0x22364a,C=0x24384e,PI=0x1a2636,CR=0x2a3a4d,RM=0x2c455c,FL=0x0f1a24;
-// ── BOUNDARY WALLS ──
-this._W(0,4,-52,104,8,2.5,W);this._W(0,4,52,104,8,2.5,W);
-this._W(-52,4,0,2.5,8,104,W);this._W(52,4,0,2.5,8,104,W);
-this._G(0,.15,-51.5,100,.12,.08,0x00e5ff);this._G(0,.15,51.5,100,.12,.08,0x00e5ff);
-this._G(-51.5,.15,0,.08,.12,100,0x00e5ff);this._G(51.5,.15,0,.08,.12,100,0x00e5ff);
-// ── CENTRAL OPEN PLAZA ── (low decorative pad, no high pillar blocking sight)
-this._D(0,.05,0,18,.1,18,FL,0x002233);
-this._G(0,.06,0,18,.04,.18,0x004466);this._G(0,.06,0,.18,.04,18,0x004466);
-// Small low cover blocks at center (waist-high — leave plenty of room to fight around them)
-this._W(-4,.6,-4,1.6,1.2,1.6,CR);this._W(4,.6,4,1.6,1.2,1.6,CR);
-this._W(-4,.6,4,1.6,1.2,1.6,CR);this._W(4,.6,-4,1.6,1.2,1.6,CR);
-// ── FOUR CORNER BUNKERS (height 3, walkable top) ──
-this._W(38,1.5,-38,12,3,12,PI);this._G(38,3.05,-38,12.3,.08,12.3,0x0066cc);
-this._W(-38,1.5,-38,12,3,12,PI);this._G(-38,3.05,-38,12.3,.08,12.3,0x00cc66);
-this._W(38,1.5,38,12,3,12,PI);this._G(38,3.05,38,12.3,.08,12.3,0xcc6600);
-this._W(-38,1.5,38,12,3,12,PI);this._G(-38,3.05,38,12.3,.08,12.3,0x8844cc);
-// One clean ramp per bunker, leading from open ground onto its top — no overlap with anything else
-this._addRamp(31,-25,35,-30,3,4,RM);
-this._addRamp(-31,-25,-35,-30,3,4,RM);
-this._addRamp(31,25,35,30,3,4,RM);
-this._addRamp(-31,25,-35,30,3,4,RM);
-// ── MID-LEVEL PLATFORMS (height 1.5, 1 ramp each, plenty of clearance) ──
-this._W(0,.75,-22,10,1.5,5,C);
-this._D(0,1.55,-22,10.2,.06,5.2,FL,0x004466);
-this._addRamp(0,-15.5,0,-18.5,1.5,3.5,RM);
-this._W(0,.75,22,10,1.5,5,C);
-this._D(0,1.55,22,10.2,.06,5.2,FL,0x446600);
-this._addRamp(0,15.5,0,18.5,1.5,3.5,RM);
-this._W(22,.75,0,5,1.5,10,C);
-this._D(22,1.55,0,5.2,.06,10.2,FL,0x440066);
-this._addRamp(15.5,0,18.5,0,1.5,3.5,RM);
-this._W(-22,.75,0,5,1.5,10,C);
-this._D(-22,1.55,0,5.2,.06,10.2,FL,0x006644);
-this._addRamp(-15.5,0,-18.5,0,1.5,3.5,RM);
-// ── COVER WALLS — placed around the open lanes, NOT inside them (single-file, no overlap) ──
-this._W(12,1,12,2.4,2,1,CR);this._W(-12,1,-12,2.4,2,1,CR);
-this._W(12,1,-12,1,2,2.4,CR);this._W(-12,1,12,1,2,2.4,CR);
-this._W(28,1,-15,1.2,2,3.5,CR);this._W(-28,1,-15,1.2,2,3.5,CR);
-this._W(28,1,15,1.2,2,3.5,CR);this._W(-28,1,15,1.2,2,3.5,CR);
-this._W(15,1,28,3.5,2,1.2,CR);this._W(-15,1,28,3.5,2,1.2,CR);
-this._W(15,1,-28,3.5,2,1.2,CR);this._W(-15,1,-28,3.5,2,1.2,CR);
-// Perimeter cover near boundary walls
-this._W(45,1,-25,1.2,2,4,CR);this._W(45,1,25,1.2,2,4,CR);
-this._W(-45,1,-25,1.2,2,4,CR);this._W(-45,1,25,1.2,2,4,CR);
-this._W(25,1,-45,4,2,1.2,CR);this._W(-25,1,-45,4,2,1.2,CR);
-this._W(25,1,45,4,2,1.2,CR);this._W(-25,1,45,4,2,1.2,CR);
-// ── FLOOR ACCENT LINES (cosmetic only, no collision) ──
-this._G(0,.02,-30,40,.04,.15,0x004466);this._G(0,.02,30,40,.04,.15,0x446600);
-this._G(30,.02,0,.15,.04,40,0x440066);this._G(-30,.02,0,.15,.04,40,0x006644);
-this._G(0,.02,0,80,.05,.18,0x00334a);this._G(0,.02,0,.18,.05,80,0x00334a);
-// ── MODERN DETAIL PASS (visual only, no collision) ──
-this._D(0,6.2,-50,92,.22,.12,0x172636,0x002f55);this._D(0,6.2,50,92,.22,.12,0x172636,0x003c1f);
-this._D(-50,6.2,0,.12,.22,92,0x172636,0x2d1f55);this._D(50,6.2,0,.12,.22,92,0x172636,0x553000);
-for(var lx=-36;lx<=36;lx+=12){this._D(lx,2.6,-40,.5,5,.2,0x101a24,0x00384d);this._D(lx,2.6,40,.5,5,.2,0x101a24,0x274200);}
-for(var lz=-36;lz<=36;lz+=12){this._D(-40,2.6,lz,.2,5,.5,0x101a24,0x352055);this._D(40,2.6,lz,.2,5,.5,0x101a24,0x4d2a00);}
-this._D(0,7.8,0,24,.12,24,0x0d131b,0x002233);
-// ── OVERHEAD BEAMS (decorative, no collision) ──
-this._D(0,7.5,0,100,.22,.22,0x141e2c);this._D(0,7.5,0,.22,.22,100,0x141e2c);
-this._D(0,7,-30,100,.16,.16,0x101820);this._D(0,7,30,100,.16,.16,0x101820);
-this._D(30,7,0,.16,.16,100,0x101820);this._D(-30,7,0,.16,.16,100,0x101820);
+/* COMPACT FPS LAYOUT — corridors, hard cover, vertical loops and controlled sight lines. */
+var W=0x202e3f,C=0x26374a,CR=0x2f4358,RM=0x2b5674,FL=0x0d1620;
+this.mapHalf=34;
+this.spawnNodes={player:[[-24,-20],[24,20],[-24,20],[24,-20],[-8,-24],[8,24]],enemy:[[-26,0],[26,0],[0,-26],[0,26],[-18,18],[18,-18],[-20,-6],[20,6]],high:[[0,-10],[0,10]]};
+// boundary
+this._W(0,4,-34,68,8,2,W);this._W(0,4,34,68,8,2,W);this._W(-34,4,0,2,8,68,W);this._W(34,4,0,2,8,68,W);
+this._G(0,.11,-33.4,64,.08,.1,0x00b8ff);this._G(0,.11,33.4,64,.08,.1,0x00b8ff);
+// central atrium ring + LOS breakers
+this._D(0,.04,0,15,.08,15,FL,0x002338);
+this._W(0,1.2,-6.2,3,2.4,1.2,CR);this._W(0,1.2,6.2,3,2.4,1.2,CR);
+this._W(-6.2,1.2,0,1.2,2.4,3,CR);this._W(6.2,1.2,0,1.2,2.4,3,CR);
+this._W(0,1,-1.7,1.6,2,1.6,C);this._W(0,1,1.7,1.6,2,1.6,C);
+// north/south corridor walls
+this._W(-11,1.5,-18,2,3,20,W);this._W(11,1.5,-18,2,3,20,W);
+this._W(-11,1.5,18,2,3,20,W);this._W(11,1.5,18,2,3,20,W);
+// east/west corridors
+this._W(-18,1.5,-11,20,3,2,W);this._W(-18,1.5,11,20,3,2,W);
+this._W(18,1.5,-11,20,3,2,W);this._W(18,1.5,11,20,3,2,W);
+// lane blockers / cover islands
+this._W(-19,1.1,0,3.4,2.2,2.4,CR);this._W(19,1.1,0,3.4,2.2,2.4,CR);
+this._W(0,1.1,-19,2.4,2.2,3.4,CR);this._W(0,1.1,19,2.4,2.2,3.4,CR);
+this._W(-24,1,9,3,2,1.2,C);this._W(24,1,-9,3,2,1.2,C);this._W(-9,1,-24,1.2,2,3,C);this._W(9,1,24,1.2,2,3,C);
+// compact vertical gameplay: catwalks + stairs
+this._W(0,1.6,-10,8,3.2,3.5,C);this._W(0,1.6,10,8,3.2,3.5,C);
+this._W(-10,1.6,0,3.5,3.2,8,C);this._W(10,1.6,0,3.5,3.2,8,C);
+this._addStairs(-5.5,-14,0,1,6,2.2,RM);this._addStairs(5.5,14,0,-1,6,2.2,RM);
+this._addStairs(-14,5.5,1,0,6,2.2,RM);this._addStairs(14,-5.5,-1,0,6,2.2,RM);
+this._W(0,3.2,0,7,1,7,0x1b2f43); // top hub
+// roof trims / readability
+this._D(0,4.7,-18,26,.16,.16,0x13202c,0x003f66);this._D(0,4.7,18,26,.16,.16,0x13202c,0x224500);
+this._D(-18,4.7,0,.16,.16,26,0x13202c,0x4a1f66);this._D(18,4.7,0,.16,.16,26,0x13202c,0x663600);
+for(var lx=-24;lx<=24;lx+=8){this._D(lx,.03,-28,2,.04,.12,0x00aaff);this._D(lx,.03,28,2,.04,.12,0x66cc22);}
+for(var lz=-24;lz<=24;lz+=8){this._D(-28,.03,lz,.12,.04,2,0xaa66ff);this._D(28,.03,lz,.12,.04,2,0xffaa44);}
 };
 /* SAFE SPAWN */
 VG.prototype._clr=function(x,z){
@@ -353,13 +326,35 @@ for(var i=0;i<this.wB.length;i++)if(b.intersectsBox(this.wB[i]))return false;
 return true;
 };
 VG.prototype._safeSpawn=function(){
-var s=[[0,4],[5,4],[-5,4],[10,10],[-10,-10],[0,-4],[8,8],[-8,-8],[12,0],[-12,0]];
+var s=(this.spawnNodes&&this.spawnNodes.player)?this.spawnNodes.player:[[0,4],[5,4],[-5,4],[10,10],[-10,-10],[0,-4],[8,8],[-8,-8],[12,0],[-12,0]];
 for(var i=0;i<s.length;i++)if(this._clr(s[i][0],s[i][1]))return s[i];
-for(var x=-44;x<=44;x+=4)for(var z=-44;z<=44;z+=4)if(this._clr(x,z))return[x,z];
+var h=this.mapHalf||32;
+for(var x=-(h-2);x<=(h-2);x+=4)for(var z=-(h-2);z<=(h-2);z+=4)if(this._clr(x,z))return[x,z];
 return[0,2];
 };
 /* SKIN */
-VG.prototype._skin=function(){var id=this.sd.selectedSkin||'default';for(var i=0;i<DATA.skins.length;i++)if(DATA.skins[i].id===id)return DATA.skins[i];return DATA.skins[0];};
+VG.prototype._mixHex=function(base,mix,t){
+var b=new THREE.Color(base),m=new THREE.Color(mix),c=b.lerp(m,Math.max(0,Math.min(1,t)));
+return c.getHex();
+};
+VG.prototype._mulHex=function(hex,m){
+var c=new THREE.Color(hex);c.multiplyScalar(m);return c.getHex();
+};
+VG.prototype._skin=function(){
+var id=this.sd.selectedSkin||'default',base=DATA.skins[0];
+for(var i=0;i<DATA.skins.length;i++)if(DATA.skins[i].id===id){base=DATA.skins[i];break;}
+var custom=this.sd.skinCustom||{palette:'default',finish:'matte'};
+var pal=DATA.skinPalettes[0];
+for(var pi=0;pi<DATA.skinPalettes.length;pi++)if(DATA.skinPalettes[pi].id===custom.palette){pal=DATA.skinPalettes[pi];break;}
+var sk=Object.assign({},base);
+if(pal&&pal.id!=='default'){
+sk.color=this._mulHex(this._mixHex(sk.color,pal.bodyTint||sk.color,.35),pal.bodyMul||1);
+sk.accent=this._mulHex(this._mixHex(sk.accent||sk.color,pal.accentTint||sk.accent||sk.color,.48),pal.accentMul||1);
+sk.emissive=this._mulHex(this._mixHex(sk.emissive||sk.accent||sk.color,pal.emissiveTint||sk.emissive||sk.accent||sk.color,.52),pal.emissiveMul||1);
+}
+sk.finish=custom.finish||'matte';
+return sk;
+};
 /* WEAPON BUILD */
 VG.prototype._skinMats=function(sk){
 /* Generate three materials per skin: body (main color), accent (highlight glow), dark (mechanical) */
@@ -372,6 +367,9 @@ if(sk.mat==='metal'){bodyOpts.metalness=.85;bodyOpts.roughness=.25;}
 else if(sk.mat==='crystal'){bodyOpts.metalness=.5;bodyOpts.roughness=.15;bodyOpts.emissive=new THREE.Color(sk.emissive||sk.color);bodyOpts.emissiveIntensity=.25;}
 else if(sk.mat==='glow'){bodyOpts.emissive=new THREE.Color(sk.emissive||sk.color);bodyOpts.emissiveIntensity=.45;bodyOpts.roughness=.35;}
 else if(sk.mat==='cosmic'){bodyOpts.emissive=new THREE.Color(sk.emissive||sk.color);bodyOpts.emissiveIntensity=.9;bodyOpts.roughness=.2;bodyOpts.metalness=.6;}
+if(sk.finish==='satin'){bodyOpts.roughness=Math.min(.65,bodyOpts.roughness+.1);bodyOpts.metalness=Math.max(0,bodyOpts.metalness-.08);}
+else if(sk.finish==='chrome'){bodyOpts.metalness=.92;bodyOpts.roughness=.16;accentOpts.metalness=.92;accentOpts.roughness=.12;}
+else if(sk.finish==='neon'){accentOpts.emissiveIntensity=(accentOpts.emissiveIntensity||.4)*1.35;glowOpts.emissiveIntensity=(glowOpts.emissiveIntensity||.5)*1.4;bodyOpts.roughness=Math.max(.2,bodyOpts.roughness-.08);}
 return{
   body:new THREE.MeshStandardMaterial(bodyOpts),
   accent:new THREE.MeshStandardMaterial(accentOpts),
@@ -497,10 +495,12 @@ for(var i=0;i<(md.initialBots||10);i++)this.spawnEnemy();
    ═══════════════════════════════════════════════════════════ */
 VG.prototype._waveConfig=function(w){
 /* Returns {count, hpMul, dmgMul, eliteChance, label} */
-var count=Math.min(24,4+Math.floor(w*1.5));
-var hpMul=1+(w-1)*0.12;
-var dmgMul=1+(w-1)*0.08;
-var eliteChance=Math.max(0,(w-3)*0.08);
+var md=this._mode();
+var hard=md.id==='survival_plus';
+var count=Math.min(hard?30:24,(hard?5:4)+Math.floor(w*(hard?1.9:1.5)));
+var hpMul=1+(w-1)*(hard?.16:.12);
+var dmgMul=1+(w-1)*(hard?.11:.08);
+var eliteChance=Math.max(0,(w-(hard?2:3))*(hard?.11:.08));
 return{count:count,hpMul:hpMul,dmgMul:dmgMul,eliteChance:Math.min(.4,eliteChance)};
 };
 VG.prototype._startWave=function(w){
@@ -545,7 +545,7 @@ if(wb.max.y>gl&&wb.max.y<=curY+.15)gl=wb.max.y;
 }return gl;
 };
 VG.prototype.updatePhys=function(dt){
-var G=22,groundAccel=13.5,airAccel=4.6,groundFric=15,airFric=2;
+var G=24,groundAccel=11.2,airAccel=3.8,groundFric=17,airFric=2.4;
 /* Crouch handling — Shift toggles crouch state */
 this.P.crouch=!!this.keys[16];
 var tgtH=this.P.crouch?this.P.crouchH:this.P.baseH;
@@ -593,7 +593,7 @@ this.P.vz*=Math.max(.88,1-dt*3.2);
 this.P.dashT-=dt;
 }
 var sp=Math.sqrt(this.P.vx*this.P.vx+this.P.vz*this.P.vz);
-var maxSpd=this.P.dashT>0?MS*1.7:MS;
+var maxSpd=this.P.dashT>0?MS*1.42:MS;
 if(sp>maxSpd){this.P.vx=(this.P.vx/sp)*maxSpd;this.P.vz=(this.P.vz/sp)*maxSpd;}
 var nx=this.cam.position.x+this.P.vx*dt,nz=this.cam.position.z+this.P.vz*dt;
 var feetY=this.cam.position.y-this.P.h,hw=.35,maxSt=.85;
@@ -617,8 +617,9 @@ var wt=this.wB[i].max.y;if(wt<=feetY+maxSt&&wt>feetY)stepZ=Math.max(stepZ,wt);el
 }}
 if(!colZ){this.cam.position.z=nz;if(stepZ>feetY){this.cam.position.y=stepZ+this.P.h;this.P.vy=0;this.P.og=true;}}
 else this.P.vz=0;
-this.cam.position.x=Math.max(-50,Math.min(50,this.cam.position.x));
-this.cam.position.z=Math.max(-50,Math.min(50,this.cam.position.z));
+var mh=(this.mapHalf||34)-1.5;
+this.cam.position.x=Math.max(-mh,Math.min(mh,this.cam.position.x));
+this.cam.position.z=Math.max(-mh,Math.min(mh,this.cam.position.z));
 this.P.vy-=G*dt;
 var newY=this.cam.position.y+this.P.vy*dt;
 var gl=this._groundAt(this.cam.position.x,this.cam.position.z,this.cam.position.y-this.P.h,.35);
@@ -629,7 +630,7 @@ if(this.P.og)this.P.coyoteT=this.cfg.coyote;
 else this.P.coyoteT=Math.max(0,this.P.coyoteT-dt);
 this.P.jumpQ=Math.max(0,(this.P.jumpQ||0)-dt);
 if(this.P.jumpQ>0&&(this.P.og||this.P.coyoteT>0)){
-this.P.vy=7.7;this.P.og=false;this.P.jumpQ=0;this.P.coyoteT=0;
+this.P.vy=7.1;this.P.og=false;this.P.jumpQ=0;this.P.coyoteT=0;
 }
 // HP regen
 var now=this.clock.getElapsedTime();
@@ -856,9 +857,18 @@ if(pi===6||pi===7){pts[pi].material.emissive.setHex(0xffaa00);pts[pi].material.e
 }
 }
 var x,z,att=0,ok=false;
-do{x=(Math.random()-.5)*84;z=(Math.random()-.5)*84;att++;
-var tc=Math.abs(x-this.cam.position.x)<12&&Math.abs(z-this.cam.position.z)<12;
-ok=!tc&&this._clr(x,z);}while(!ok&&att<40);
+var ns=(this.spawnNodes&&this.spawnNodes.enemy)?this.spawnNodes.enemy:null;
+do{
+if(ns&&Math.random()<.85){
+  var n=ns[Math.floor(Math.random()*ns.length)];
+  x=n[0]+(Math.random()-.5)*2.2;z=n[1]+(Math.random()-.5)*2.2;
+}else{
+  var h=(this.mapHalf||34)-4;
+  x=(Math.random()-.5)*h*2;z=(Math.random()-.5)*h*2;
+}
+att++;
+var tc=Math.abs(x-this.cam.position.x)<10&&Math.abs(z-this.cam.position.z)<10;
+ok=!tc&&this._clr(x,z);}while(!ok&&att<45);
 var gl=this._groundAt(x,z,10,.5);
 r.mesh.position.set(x,gl+1,z);this.scene.add(r.mesh);
 this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite});
@@ -920,6 +930,7 @@ setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},800);
 };
 VG.prototype.rewardKill=function(type){
 this.sd.stats.kills++;this.mK++;
+if(this._mode().teamBattle)this.modeScore.player+=1;
 var lm=this.P.lootMul||1;
 var bt=DATA.botTypes[type]||DATA.botTypes[0];
 var cr=Math.floor(bt.cr*lm);
@@ -1030,7 +1041,8 @@ for(var w=0;w<this.wB.length;w++){if(eBzZ.intersectsBox(this.wB[w])){var wt=this
 if(!eCz){ep.z=enz;if(eSz>eFeet)ep.y=eSz+1;}
 var eGl=this._groundAt(ep.x,ep.z,ep.y-1,.5);
 ep.y=eGl+1;
-ep.x=Math.max(-50,Math.min(50,ep.x));ep.z=Math.max(-50,Math.min(50,ep.z));
+var emh=(this.mapHalf||34)-1.6;
+ep.x=Math.max(-emh,Math.min(emh,ep.x));ep.z=Math.max(-emh,Math.min(emh,ep.z));
 /* Leg animation */
 if(Math.abs(mx)>.01||Math.abs(mz)>.01){e.legP+=dt*8;var ls=Math.sin(e.legP)*.15;var pts=e.mesh.userData.parts;if(pts&&pts.length>=16){if(pts[12])pts[12].position.z=ls*.15;if(pts[13])pts[13].position.z=-ls*.15;}}
 
@@ -1166,7 +1178,14 @@ var ps=document.getElementById('pause-sub');if(ps)ps.innerText=subtitle||'Clique
 };
 VG.prototype._updateModeObjectives=function(dt){
 var md=this._mode();
-if(!md.domination||this.state!=='PLAYING')return;
+if(this.state!=='PLAYING')return;
+if(md.teamBattle){
+this.modeScore.bots=Math.min(md.scoreTarget,this.modeScore.bots+dt*(1.4+this.enemies.length*.08));
+if(this.modeScore.player>=md.scoreTarget)this._modeComplete('VICTOIRE — TEAM DEATHMATCH','Score final '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget);
+else if(this.modeScore.bots>=md.scoreTarget)this._modeComplete('DÉFAITE — TEAM DEATHMATCH','L’escouade bot atteint '+md.scoreTarget+' points.');
+return;
+}
+if(!md.domination)return;
 var cp=this.cam.position;
 var pIn=(cp.x*cp.x+cp.z*cp.z)<81;
 if(pIn)this.modeScore.player=Math.min(md.scoreTarget,this.modeScore.player+dt*14);
@@ -1178,7 +1197,7 @@ else if(this.modeScore.bots>=md.scoreTarget)this._modeComplete('DÉFAITE — DOM
 };
 /* STATE */
 VG.prototype.startMatch=function(mode){
-var map={survival:'survival',training:'training',deathmatch:'deathmatch',assault:'assault',domination:'domination'};
+var map={survival:'survival',survival_plus:'survival_plus',training:'training',deathmatch:'deathmatch',teamdm:'teamdm',assault:'assault',domination:'domination'};
 this.gameMode=map[mode]||'training';
 var md=this._mode();
 this._modeTheme(md.theme||'training');
@@ -1259,10 +1278,10 @@ var wX,wZ;
 if(dZ===0&&dX===0){wX=fw.x;wZ=fw.z;}
 else{wX=fw.x*dZ+rt.x*dX;wZ=fw.z*dZ+rt.z*dX;}
 var l=Math.sqrt(wX*wX+wZ*wZ);if(l>0){wX/=l;wZ/=l;}
-var DASH_PWR=15;
+var DASH_PWR=11.5;
 this.P.dashVx=wX*DASH_PWR;this.P.dashVz=wZ*DASH_PWR;
 this.P.vx+=wX*DASH_PWR*.45;this.P.vz+=wZ*DASH_PWR*.45;
-this.P.dashT=.14;this.P.dashCd=1.8;
+this.P.dashT=.1;this.P.dashCd=2.2;
 this._sndDash();
 var cs=document.getElementById('crosshair');if(cs){cs.classList.add('dash-flash');clearTimeout(this._dfT);this._dfT=setTimeout(function(){cs.classList.remove('dash-flash');},200);}
 };
@@ -1323,7 +1342,9 @@ else S('hud-wave-remain',Math.max(0,this.waveRemaining||0));
 var ob=document.getElementById('hud-objective');
 if(ob){
 if(md.killTarget)ob.innerText='OBJECTIF: '+this.mK+' / '+md.killTarget+' ÉLIMS';
+else if(md.teamBattle)ob.innerText='TDM: VANGUARD '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget+'  |  BOTS '+Math.floor(this.modeScore.bots);
 else if(md.domination)ob.innerText='ZONE: '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget+'  |  BOTS '+Math.floor(this.modeScore.bots);
+else if(md.id==='survival_plus')ob.innerText='SURVIE+ — VAGUES ÉLITES';
 else if(md.waves)ob.innerText='MODE SURVIE — VAGUES PROGRESSIVES';
 else if(md.id==='assault')ob.innerText='ASSAUT — PRESSION MAXIMALE';
 else ob.innerText='ENTRAÎNEMENT — SANDBOX';
@@ -1380,7 +1401,15 @@ var equipEl=document.getElementById('skin-equipped');
 if(equipEl){
   var hexC='#'+cur.color.toString(16).padStart(6,'0');
   var hexA='#'+(cur.accent||cur.color).toString(16).padStart(6,'0');
-  equipEl.innerHTML='<div class="eq-label">SKIN \u00c9QUIP\u00c9</div><div class="eq-name" style="color:'+hexA+';text-shadow:0 0 14px '+hexA+'">'+cur.name+'</div><div class="eq-rarity rarity-'+cur.rarity+'">'+(rl[cur.rarity]||'')+'</div><div class="eq-preview" style="background:linear-gradient(135deg,'+hexC+' 0%, '+hexA+' 100%);box-shadow:0 0 30px '+hexA+',inset 0 0 20px rgba(0,0,0,.4)"></div>';
+  var sc=this.sd.skinCustom||{palette:'default',finish:'matte'};
+  var palBtns='',finBtns='';
+  for(var pp=0;pp<DATA.skinPalettes.length;pp++){
+    var pal=DATA.skinPalettes[pp];
+    palBtns+='<button class="'+(sc.palette===pal.id?'sel':'')+'" onclick="app.setSkinPalette(\''+pal.id+'\')">'+pal.name+'</button>';
+  }
+  var finishes=[{id:'matte',name:'Matte'},{id:'satin',name:'Satin'},{id:'chrome',name:'Chrome'},{id:'neon',name:'Neon'}];
+  for(var ff=0;ff<finishes.length;ff++)finBtns+='<button class="'+(sc.finish===finishes[ff].id?'sel':'')+'" onclick="app.setSkinFinish(\''+finishes[ff].id+'\')">'+finishes[ff].name+'</button>';
+  equipEl.innerHTML='<div class="eq-label">SKIN \u00c9QUIP\u00c9</div><div class="eq-name" style="color:'+hexA+';text-shadow:0 0 14px '+hexA+'">'+cur.name+'</div><div class="eq-rarity rarity-'+cur.rarity+'">'+(rl[cur.rarity]||'')+'</div><div class="eq-preview" style="background:linear-gradient(135deg,'+hexC+' 0%, '+hexA+' 100%);box-shadow:0 0 30px '+hexA+',inset 0 0 20px rgba(0,0,0,.4)"></div><div class="skin-custom-block"><div class="sc-title">PALETTE</div><div class="sc-row">'+palBtns+'</div><div class="sc-title">FINITION</div><div class="sc-row">'+finBtns+'</div></div>';
 }
 /* Order skins by rarity */
 var order=['common','rare','epic','mythic','legendary','ultimate'];
@@ -1403,6 +1432,14 @@ g.innerHTML+='<div class="card skin-card '+(sel?'card-selected':'')+' rarity-bg-
 var btn=document.getElementById('spin-btn');if(btn)btn.disabled=self._spin||self.sd.resources.tokens<50;
 };
 VG.prototype.selectSkin=function(id){if(!this._skinOwned(id))return;this.sd.selectedSkin=id;this.save();this.popSkins();if(this.P&&this.P.wm&&this.state==='PLAYING')this.buildWpn();};
+VG.prototype.setSkinPalette=function(id){
+if(!this.sd.skinCustom)this.sd.skinCustom={palette:'default',finish:'matte'};
+this.sd.skinCustom.palette=id;this.save();this.popSkins();if(this.P&&this.P.wm)this.buildWpn();
+};
+VG.prototype.setSkinFinish=function(id){
+if(!this.sd.skinCustom)this.sd.skinCustom={palette:'default',finish:'matte'};
+this.sd.skinCustom.finish=id;this.save();this.popSkins();if(this.P&&this.P.wm)this.buildWpn();
+};
 VG.prototype.sellSkin=function(id){
 var cnt=this._skinCount(id);
 if(cnt<=1){this._flash('Aucun doublon \u00e0 vendre !');return;}
