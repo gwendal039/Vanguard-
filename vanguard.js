@@ -1210,8 +1210,7 @@ var ep=e.mesh.position,dx=pP.x-ep.x,dz=pP.z-ep.z,dist=Math.sqrt(dx*dx+dz*dz);
 if(e.beh){var moved=Math.abs((e.beh.lastX||ep.x)-ep.x)+Math.abs((e.beh.lastZ||ep.z)-ep.z);if(moved<.03)e.beh.stuckT=(e.beh.stuckT||0)+dt;else e.beh.stuckT=0;e.beh.lastX=ep.x;e.beh.lastZ=ep.z;}
 var bt=DATA.botTypes[e.type]||DATA.botTypes[0];
 var arcadeMul=this.mission.active?(this.mission.stageMul||1):1;
-var aiSkill=e.aiSkill||1;
-var spd=bt.speed*0.92*(md.botSpeedMul||1)*arcadeMul*(.92+aiSkill*.08);
+var spd=bt.speed*0.92*(md.botSpeedMul||1)*arcadeMul;
 e.mesh.lookAt(pP.x,ep.y,pP.z);
 /* Billboard HP bars toward camera */
 if(e.mesh.userData.hpBar){e.mesh.userData.hpBar.lookAt(pP);e.mesh.userData.hpBg.lookAt(pP);}
@@ -1219,7 +1218,7 @@ if(e.mesh.userData.hpLbl)e.mesh.userData.hpLbl.lookAt(pP);
 
 var mx=0,mz=0;
 /* Movement AI per weapon type */
-var aggro=(md.botAggro||1)*arcadeMul*(.9+aiSkill*.12);
+var aggro=(md.botAggro||1)*arcadeMul;
 var idealDist=bt.idealDist/aggro;
 var minDist=bt.minDist/Math.max(.8,aggro*.95);
 if(md.waves){
