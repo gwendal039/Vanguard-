@@ -62,8 +62,10 @@ document.getElementById('game-container').appendChild(this.cvs);
 this.clock=new THREE.Clock();
 this.wM=[];this.wB=[];this.enemies=[];this.proj=[];this.tracers=[];this.pickups=[];
 this.bobT=0;this.recZ=0;this.recX=0;
-this.P={h:1.65,baseH:1.65,crouchH:1.05,curH:1.65,crouch:false,vx:0,vz:0,vy:0,og:false,hp:100,mhp:100,spd:12,baseSpd:12,wp:null,ammo:0,res:0,lf:0,rld:false,wm:null,dm:1,lastHit:0,regenRate:5,lootMul:1,_mgSpin:0,dashCd:0,dashT:0,dashVx:0,dashVz:0,ads:false,adsT:0,baseFov:80,wpHipPos:null,wpAdsPos:null};
+this.P={h:1.65,baseH:1.65,crouchH:1.05,curH:1.65,crouch:false,vx:0,vz:0,vy:0,og:false,hp:100,mhp:100,spd:12,baseSpd:12,wp:null,ammo:0,res:0,lf:0,rld:false,wm:null,dm:1,lastHit:0,regenRate:5,lootMul:1,_mgSpin:0,dashCd:0,dashT:0,dashVx:0,dashVz:0,ads:false,adsT:0,baseFov:80,wpHipPos:null,wpAdsPos:null,bloom:0,jumpQ:0,coyoteT:0};
 this.keys={};this.md=false;this.mx=0;this.my=0;
+this.cfg={lookSens:.0019,adsLookMul:.72,lookSmooth:.4,jumpBuffer:.12,coyote:.1};
+this._smMx=0;this._smMy=0;
 this.mK=0;this.mXP=0;this._spin=false;
 this.activeBoosts=[];
 /* Game mode: 'training' (sandbox) or 'survival' (wave-based) */
@@ -451,6 +453,7 @@ this.P.wp=wp;this.P.ammo=wp.mag;this.P.res=wp.mag*ammoMul;this.P.rld=false;
 this.P.vx=0;this.P.vz=0;this.P.vy=0;this.P.og=false;this.P.lf=0;this.P.lastHit=0;this.P._mgSpin=0;
 this.P.crouch=false;this.P.curH=this.P.baseH;this.P.h=this.P.baseH;
 this.P.dashCd=0;this.P.dashT=0;this.P.dashVx=0;this.P.dashVz=0;
+this.P.bloom=0;this.P.jumpQ=0;this.P.coyoteT=0;
 this.P.ads=false;this.P.adsT=0;this.cam.fov=this.P.baseFov||80;this.cam.updateProjectionMatrix();
 var scopeR=document.getElementById('sniper-scope');if(scopeR)scopeR.classList.remove('show');
 this.keys={};this.md=false;this.mx=0;this.my=0;this.recX=0;this.recZ=0;this.bobT=0;
@@ -526,7 +529,7 @@ if(wb.max.y>gl&&wb.max.y<=curY+.15)gl=wb.max.y;
 }return gl;
 };
 VG.prototype.updatePhys=function(dt){
-var G=22,FR=10,AC=80;
+var G=22,groundAccel=16,airAccel=5.5,groundFric=11,airFric=1.6;
 /* Crouch handling — Shift toggles crouch state */
 this.P.crouch=!!this.keys[16];
 var tgtH=this.P.crouch?this.P.crouchH:this.P.baseH;
@@ -534,9 +537,14 @@ this.P.curH=THREE.MathUtils.lerp(this.P.curH||this.P.baseH,tgtH,Math.min(1,dt*12
 this.P.h=this.P.curH;
 var crouchSpdMul=this.P.crouch?.55:1;
 var MS=this.P.baseSpd*crouchSpdMul;
-this.cam.rotation.y-=this.mx*.002;this.cam.rotation.x-=this.my*.002;
-this.cam.rotation.x=Math.max(-1.5,Math.min(1.5,this.cam.rotation.x));
+var rawMx=this.mx,rawMy=this.my;
 this.mx=0;this.my=0;
+var lookAlpha=Math.min(1,dt*(24+this.cfg.lookSmooth*40));
+this._smMx=THREE.MathUtils.lerp(this._smMx||0,rawMx,lookAlpha);
+this._smMy=THREE.MathUtils.lerp(this._smMy||0,rawMy,lookAlpha);
+var sens=this.cfg.lookSens*(this.P.ads?this.cfg.adsLookMul:1);
+this.cam.rotation.y-=this._smMx*sens;this.cam.rotation.x-=this._smMy*sens;
+this.cam.rotation.x=Math.max(-1.45,Math.min(1.45,this.cam.rotation.x));
 var yaw=this.cam.rotation.y;
 var fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
 var rt=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
@@ -548,9 +556,17 @@ var dZ=(iF?1:0)-(iB?1:0),dX=(iR?1:0)-(iL?1:0);
 var wX=fw.x*dZ+rt.x*dX,wZ=fw.z*dZ+rt.z*dX;
 var wl=Math.sqrt(wX*wX+wZ*wZ);if(wl>0){wX/=wl;wZ/=wl;}
 var mv=(dX!==0||dZ!==0);
-if(mv){this.P.vx+=wX*AC*dt;this.P.vz+=wZ*AC*dt;}
-var cs=Math.sqrt(this.P.vx*this.P.vx+this.P.vz*this.P.vz);
-if(cs>.01){var dr=cs*FR*dt;var ns=Math.max(0,cs-dr);this.P.vx*=ns/cs;this.P.vz*=ns/cs;}else{this.P.vx=0;this.P.vz=0;}
+var tgtVX=wX*MS,tgtVZ=wZ*MS;
+var accel=this.P.og?groundAccel:airAccel;
+this.P.vx=THREE.MathUtils.lerp(this.P.vx,tgtVX,Math.min(1,dt*accel));
+this.P.vz=THREE.MathUtils.lerp(this.P.vz,tgtVZ,Math.min(1,dt*accel));
+if(!mv){
+var fr=this.P.og?groundFric:airFric;
+var damp=Math.max(0,1-fr*dt);
+this.P.vx*=damp;this.P.vz*=damp;
+if(Math.abs(this.P.vx)<.01)this.P.vx=0;
+if(Math.abs(this.P.vz)<.01)this.P.vz=0;
+}
 /* DASH — applies extra burst velocity for a short duration */
 if(this.P.dashCd>0)this.P.dashCd-=dt;
 if(this.P.dashT>0){
@@ -591,6 +607,12 @@ var gl=this._groundAt(this.cam.position.x,this.cam.position.z,this.cam.position.
 var minY=gl+this.P.h;
 if(newY<=minY){newY=minY;this.P.vy=0;this.P.og=true;}else{this.P.og=false;}
 this.cam.position.y=newY;
+if(this.P.og)this.P.coyoteT=this.cfg.coyote;
+else this.P.coyoteT=Math.max(0,this.P.coyoteT-dt);
+this.P.jumpQ=Math.max(0,(this.P.jumpQ||0)-dt);
+if(this.P.jumpQ>0&&(this.P.og||this.P.coyoteT>0)){
+this.P.vy=7.7;this.P.og=false;this.P.jumpQ=0;this.P.coyoteT=0;
+}
 // HP regen
 var now=this.clock.getElapsedTime();
 if(now-this.P.lastHit>2&&this.P.hp<this.P.mhp){
@@ -630,6 +652,11 @@ this.P.wm.position.copy(bpos);this.P.wm.position.z+=this.recZ;this.P.wm.rotation
 if(wpN==='Minigun'&&this.md&&!this.P.rld){this.P._mgSpin+=dt*25;this.P.wm.rotation.z=this.P._mgSpin;}
 else{this.P.wm.rotation.z=THREE.MathUtils.lerp(this.P.wm.rotation.z||0,0,dt*8);}
 }
+var horizSpd=Math.sqrt(this.P.vx*this.P.vx+this.P.vz*this.P.vz);
+var moveRatio=Math.min(1.6,horizSpd/Math.max(1,this.P.baseSpd));
+var recov=this.P.ads?3.8:2.5;
+this.P.bloom=Math.max(0,(this.P.bloom||0)-dt*recov);
+this._updateCrosshair(moveRatio);
 };
 /* SHOOTING */
 VG.prototype.handleShoot=function(){
@@ -638,6 +665,7 @@ if(now-this.P.lf>=wp.fireRate){if(this.P.ammo>0){this.P.lf=now;this.P.ammo--;
 var wpN=DATA.classes[this.sd.selectedClass].weapon;
 var pl=wp.pellets||1;for(var p=0;p<pl;p++)this.fireRay();this.updateHUD();
 var rec=this._getRecoil(wpN);this.recZ=rec.z;this.recX=rec.x;
+this.P.bloom=Math.min(1.8,(this.P.bloom||0)+(wp.auto ? .08 : .18));
 this._sndShot(wpN);
 }else this.reload();}
 };
@@ -649,7 +677,12 @@ var adsMul={'Sniper':.02,'Assault Rifle':.18,'SMG':.45,'Shotgun':.7,'Minigun':.3
 var hipMul={'Sniper':3.5,'Assault Rifle':1.6,'SMG':1.25,'Shotgun':1.05,'Minigun':1.5,'Plasma Rifle':1.4}[wpName]||1.3;
 var t=this.P.adsT||0;
 var spreadMul=hipMul+(adsMul-hipMul)*t;
-dir.x+=(Math.random()-.5)*wp.spread*spreadMul;dir.y+=(Math.random()-.5)*wp.spread*spreadMul;dir.normalize();
+var horizSpd=Math.sqrt(this.P.vx*this.P.vx+this.P.vz*this.P.vz);
+var movePenalty=1+Math.min(1.5,horizSpd/Math.max(1,this.P.baseSpd))*(this.P.ads?.4:1);
+if(!this.P.og)movePenalty+=.35;
+var bloomPenalty=1+(this.P.bloom||0);
+var finalSpread=wp.spread*spreadMul*movePenalty*bloomPenalty;
+dir.x+=(Math.random()-.5)*finalSpread;dir.y+=(Math.random()-.5)*finalSpread;dir.normalize();
 var rc=new THREE.Raycaster(this.cam.position,dir,.1,200);
 /* Build target list: walls + enemy parts. Walls are tagged so we can distinguish them. */
 var tg=[],wallSet={};
@@ -806,6 +839,7 @@ this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.ge
 VG.prototype.dmgEnemy=function(en,dmg,isHeadshot){
 if(!en||!en.mesh)return;en.hp-=dmg;
 var hm=document.getElementById('hit-marker');if(hm){hm.classList.add('show');clearTimeout(this._hmT);this._hmT=setTimeout(function(){hm.classList.remove('show');},120);}
+if(hm&&isHeadshot){hm.classList.add('headshot');clearTimeout(this._hmHsT);this._hmHsT=setTimeout(function(){hm.classList.remove('headshot');},120);}
 this._showDmg(en.mesh.position,dmg,isHeadshot);
 if(isHeadshot)this._sndHeadshot();else this._sndHit();
 var pts=en.mesh.userData.parts||[];
@@ -1172,6 +1206,14 @@ this.P.dashT=.18;this.P.dashCd=1.4;
 this._sndDash();
 var cs=document.getElementById('crosshair');if(cs){cs.classList.add('dash-flash');clearTimeout(this._dfT);this._dfT=setTimeout(function(){cs.classList.remove('dash-flash');},200);}
 };
+VG.prototype._updateCrosshair=function(moveRatio){
+var ch=document.getElementById('crosshair');if(!ch)return;
+var adsFactor=1-(this.P.adsT||0)*.85;
+var spread=((this.P.bloom||0)*12+moveRatio*5+2.5)*adsFactor;
+var gap=Math.max(2,Math.min(20,spread));
+ch.style.setProperty('--crosshair-gap',gap.toFixed(2)+'px');
+ch.classList.toggle('ads-active',(this.P.adsT||0)>.2);
+};
 VG.prototype.initEvents=function(){
 var self=this;
 window.addEventListener('resize',function(){self.cam.aspect=innerWidth/innerHeight;self.cam.updateProjectionMatrix();self.ren.setSize(innerWidth,innerHeight);});
@@ -1182,7 +1224,7 @@ else{if(self.state==='PLAYING'){self.state='PAUSED';self.keys={};self.md=false;s
 var po=document.getElementById('pause-overlay');if(po)po.addEventListener('click',function(e){if(self.state==='PAUSED'){if(e.target.closest&&e.target.closest('.quit-btn'))return;try{self.cvs.requestPointerLock();}catch(er){}}
 if(self.state==='GAMEOVER'){/* do nothing, use quit button */}});
 this.cvs.addEventListener('click',function(){self._ensureAudio();if((self.state==='PLAYING'||self.state==='PAUSED')&&!document.pointerLockElement)try{self.cvs.requestPointerLock();}catch(e){}});
-document.addEventListener('keydown',function(e){self._ensureAudio();if(self.state!=='PLAYING')return;var kc=self._kc(e);self.keys[kc]=true;if(kc===32&&self.P.og){self.P.vy=7.5;self.P.og=false;}if(kc===82&&!self.P.rld)self.reload();if(kc===17||kc===69){self.tryDash();}if([87,65,83,68,32,90,81,37,38,39,40,16,17,69].indexOf(kc)!==-1)e.preventDefault();});
+document.addEventListener('keydown',function(e){self._ensureAudio();if(self.state!=='PLAYING')return;var kc=self._kc(e);self.keys[kc]=true;if(kc===32){self.P.jumpQ=self.cfg.jumpBuffer;}if(kc===82&&!self.P.rld)self.reload();if(kc===17||kc===69){self.tryDash();}if([87,65,83,68,32,90,81,37,38,39,40,16,17,69].indexOf(kc)!==-1)e.preventDefault();});
 document.addEventListener('keyup',function(e){var kc=self._kc(e);self.keys[kc]=false;});
 document.addEventListener('mousemove',function(e){if(self.state==='PLAYING'&&document.pointerLockElement){self.mx+=e.movementX;self.my+=e.movementY;}});
 document.addEventListener('mousedown',function(e){if(self.state==='PLAYING'){if(e.button===0)self.md=true;else if(e.button===2)self.P.ads=true;}});
