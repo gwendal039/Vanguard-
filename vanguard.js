@@ -360,7 +360,43 @@ if(ch==='#'){
 }else if(ch==='H'){
   this.spawnNodes.high.push([p.x,p.z]);
   this._W(p.x,1.1,p.z,tile*.8,2.2,tile*.8,0x29445d);
+/* KRUNKER-STYLE COMPACT PVP ARENA — sealed geometry, deliberate lanes, strong spawn bunkers. */
+var W=0x1d2a38,C=0x253749,CR=0x334f66,RM=0x2f6282,FL=0x0c141d;
+this.mapHalf=34;
+this.spawnNodes={
+player:[[-29,-25],[-27,-21],[-25,-26],[29,25],[27,21],[25,26],[-29,25],[-27,21],[29,-25],[27,-21]],
+enemy:[[29,25],[27,21],[25,26],[-29,-25],[-27,-21],[-25,-26],[29,-25],[27,-21],[-29,25],[-27,21]],
+high:[[-8,8],[8,-8],[-8,-8],[8,8],[0,0]],
+patrol:[[-28,-24],[-28,-12],[-28,0],[-28,12],[-28,24],[-18,-24],[-18,-12],[-18,0],[-18,12],[-18,24],[-8,-24],[-8,-12],[-8,0],[-8,12],[-8,24],[0,-24],[0,-12],[0,0],[0,12],[0,24],[8,-24],[8,-12],[8,0],[8,12],[8,24],[18,-24],[18,-12],[18,0],[18,12],[18,24],[28,-24],[28,-12],[28,0],[28,12],[28,24]],
+flank:[[-24,-6],[-24,6],[24,-6],[24,6],[-6,-24],[6,-24],[-6,24],[6,24],[-16,16],[16,16],[-16,-16],[16,-16]]
+};
+var perimeter=68;
+this._W(0,4,-34,perimeter,8,2,W);this._W(0,4,34,perimeter,8,2,W);this._W(-34,4,0,2,8,perimeter,W);this._W(34,4,0,2,8,perimeter,W);
+this._D(0,.02,0,66,.03,66,0x101a24,0x001726);
+// outer ring blockers to prevent fake passages
+for(var i=-24;i<=24;i+=12){
+this._W(i,1.8,-28,6,3.6,2,C);this._W(i,1.8,28,6,3.6,2,C);
+this._W(-28,1.8,i,2,3.6,6,C);this._W(28,1.8,i,2,3.6,6,C);
 }
+// three-lane skeleton (north / mid / south) with clear intersections
+this._W(0,1.7,-18,58,3.4,2,W);
+this._W(0,1.7,18,58,3.4,2,W);
+this._W(-18,1.7,0,2,3.4,58,W);
+this._W(18,1.7,0,2,3.4,58,W);
+// central combat block + upper ring
+this._W(0,1.4,0,8,2.8,8,0x20364a);
+this._W(0,3.3,0,12,1,12,0x25445e);
+this._W(0,4.25,0,6,0.9,6,0x1a2d3e);
+this._addStairs(-6.4,-10.2,0,1,8,2.2,RM);this._addStairs(6.4,10.2,0,-1,8,2.2,RM);
+this._addStairs(-10.2,6.4,1,0,8,2.2,RM);this._addStairs(10.2,-6.4,-1,0,8,2.2,RM);
+// structured buildings in corners: all fully sealed volumes
+var b=[[-22,-22,0x24465f],[-22,22,0x3b2a54],[22,-22,0x2d4a2a],[22,22,0x4a3821]];
+for(var bi=0;bi<b.length;bi++){
+var bx=b[bi][0],bz=b[bi][1],bc=b[bi][2];
+this._W(bx,2,bz,10,4,10,bc); // main mass
+this._W(bx,4.35,bz,6,0.7,6,CR); // roof cap
+this._W(bx+4.3,1,bz,1.4,2,4,0x131f2b); // doorway blocker to avoid ambiguous slit
+this._W(bx-4.3,1,bz,1.4,2,4,0x131f2b);
 }
 }
 
@@ -380,6 +416,25 @@ if(this.spawnNodes.enemy.length<4)this.spawnNodes.enemy.push([halfW-6,halfH-6],[
 // visual lane guides
 for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*2){this._D(lx,.04,-halfH+tile*1.1,1.4,.04,.12,0x00a6ff);this._D(lx,.04,halfH-tile*1.1,1.4,.04,.12,0x6add59);} 
 for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*2){this._D(-halfW+tile*1.1,.04,lz,.12,.04,1.4,0xa76bff);this._D(halfW-tile*1.1,.04,lz,.12,.04,1.4,0xffb24a);} 
+// corridor covers: symmetric and intentional
+for(var c=-21;c<=21;c+=7){
+if(c!==0){
+this._W(c,1,-9,2,2,2.2,CR);this._W(c,1,9,2,2,2.2,CR);
+this._W(-9,1,c,2.2,2,2,CR);this._W(9,1,c,2.2,2,2,CR);
+}
+}
+// side catwalks + ramps (controlled verticality)
+this._W(-24,2.4,0,4,1,16,0x264860);this._W(24,2.4,0,4,1,16,0x264860);
+this._addRamp(-27,-8,-24,0,2.4,3.2,RM);this._addRamp(-27,8,-24,0,2.4,3.2,RM);
+this._addRamp(27,-8,24,0,2.4,3.2,RM);this._addRamp(27,8,24,0,2.4,3.2,RM);
+// protected spawn bunkers (hard LOS break at exit)
+this._W(-30,1.8,-24,2,3.6,12,W);this._W(-24,1.8,-30,12,3.6,2,W);this._W(-26,1.2,-23,4,2.4,2,CR);
+this._W(30,1.8,24,2,3.6,12,W);this._W(24,1.8,30,12,3.6,2,W);this._W(26,1.2,23,4,2.4,2,CR);
+this._W(-30,1.8,24,2,3.6,12,W);this._W(-24,1.8,30,12,3.6,2,W);this._W(-26,1.2,23,4,2.4,2,CR);
+this._W(30,1.8,-24,2,3.6,12,W);this._W(24,1.8,-30,12,3.6,2,W);this._W(26,1.2,-23,4,2.4,2,CR);
+// lane accents
+for(var lx=-27;lx<=27;lx+=6){this._D(lx,.04,-30,1.6,.04,.12,0x00a8ff);this._D(lx,.04,30,1.6,.04,.12,0x66dd55);}
+for(var lz=-27;lz<=27;lz+=6){this._D(-30,.04,lz,.12,.04,1.6,0xa76bff);this._D(30,.04,lz,.12,.04,1.6,0xffaa49);}
 };
 
 
