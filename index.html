@@ -48,9 +48,6 @@
         <button class="nav-btn primary" onclick="app.startMatch('survival')">
           <span class="btn-icon">▶</span> SURVIE — MODE PRINCIPAL
         </button>
-        <button class="nav-btn nav-btn-training" onclick="app.startMatch('training')">
-          <span class="btn-icon">◐</span> ENTRAÎNEMENT (PRATIQUE)
-        </button>
         <button class="nav-btn" onclick="app.showScreen('loadout')">
           <span class="btn-icon">◈</span> CLASSES &amp; LOADOUT
         </button>
@@ -75,6 +72,12 @@
           <div class="class-name" id="current-class-display">SOLDIER</div>
           <div class="class-weapon" id="current-weapon-display">ASSAULT RIFLE</div>
           <div class="class-flavor" id="current-class-desc">Balanced — AR + medium armor</div>
+        </div>
+        <div class="mode-grid">
+          <button class="mode-btn" onclick="app.startMatch('training')"><strong>ENTRAÎNEMENT</strong><span>Pratique libre et bots allégés.</span></button>
+          <button class="mode-btn" onclick="app.startMatch('deathmatch')"><strong>MATCH À MORT</strong><span>Premier à 35 éliminations.</span></button>
+          <button class="mode-btn" onclick="app.startMatch('assault')"><strong>ASSAUT</strong><span>Pression continue, bots renforcés.</span></button>
+          <button class="mode-btn" onclick="app.startMatch('domination')"><strong>DOMINATION</strong><span>Tenez la zone centrale pour gagner.</span></button>
         </div>
       </div>
 
@@ -193,6 +196,7 @@
       <div class="hud-badge hud-badge-kills">✕ <span id="hud-kills">0</span></div>
       <div class="hud-badge hud-badge-mode" id="hud-mode-badge">ENTRAÎNEMENT</div>
     </div>
+    <div class="hud-objective" id="hud-objective">ENTRAÎNEMENT — SANDBOX</div>
 
     <!-- Wave indicator (Survival only) -->
     <div id="hud-wave" class="hud-wave hidden">
