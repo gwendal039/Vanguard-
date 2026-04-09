@@ -65,21 +65,21 @@ this.wM=[];this.wB=[];this.enemies=[];this.proj=[];this.tracers=[];this.pickups=
 this.bobT=0;this.recZ=0;this.recX=0;
 this.P={h:1.65,baseH:1.65,crouchH:1.05,curH:1.65,crouch:false,vx:0,vz:0,vy:0,og:false,hp:100,mhp:100,spd:12,baseSpd:12,wp:null,ammo:0,res:0,lf:0,rld:false,wm:null,dm:1,lastHit:0,regenRate:5,lootMul:1,_mgSpin:0,dashCd:0,dashT:0,dashVx:0,dashVz:0,ads:false,adsT:0,baseFov:80,wpHipPos:null,wpAdsPos:null,bloom:0,jumpQ:0,coyoteT:0,spawnShieldT:0};
 this.keys={};this.md=false;this.mx=0;this.my=0;
-this.cfg={lookSens:.0019,adsLookMul:.72,lookSmooth:.4,jumpBuffer:.12,coyote:.1};
+this.cfg={lookSens:.0031,adsLookMul:.84,lookSmooth:.22,jumpBuffer:.12,coyote:.1};
 this._smMx=0;this._smMy=0;
 this.mK=0;this.mXP=0;this._spin=false;
 this.activeBoosts=[];
 this.modeDefs={
 training:{id:'training',label:'ENTRAÎNEMENT',desc:'Routes guidées et pression réduite',theme:'training',initialBots:8,respawn:true,respawnDelay:1.5,botSpeedMul:.9,botRangeMul:.88,botAggro:.9,botDamageMul:.9,showHpBars:true},
-survival:{id:'survival',label:'SURVIE',desc:'Vagues progressives dans des couloirs fermés',theme:'survival',waves:true,showHpBars:false},
-survival_plus:{id:'survival_plus',label:'SURVIE+',desc:'Vagues élites plus denses et rotations forcées',theme:'survival',waves:true,showHpBars:false,botSpeedMul:1.08,botRangeMul:1.12,botAggro:1.14,botDamageMul:1.12},
+survival:{id:'survival',label:'SURVIE',desc:'Tenez 6 vagues puis extraction',theme:'survival',waves:true,waveTarget:6,showHpBars:false},
+survival_plus:{id:'survival_plus',label:'SURVIE+',desc:'Tenez 9 vagues élites puis extraction',theme:'survival',waves:true,waveTarget:9,showHpBars:false,botSpeedMul:1.08,botRangeMul:1.12,botAggro:1.14,botDamageMul:1.12},
 deathmatch:{id:'deathmatch',label:'MATCH À MORT',desc:'Atteignez 35 éliminations',theme:'training',initialBots:10,respawn:true,respawnDelay:1.05,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,killTarget:35,showHpBars:true},
 teamdm:{id:'teamdm',label:'TEAM DEATHMATCH',desc:'Course au score : Vanguard vs bots',theme:'training',initialBots:12,respawn:true,respawnDelay:.9,botSpeedMul:1.02,botRangeMul:1.03,botAggro:1.05,botDamageMul:1,teamBattle:true,scoreTarget:45,showHpBars:true},
 assault:{id:'assault',label:'ASSAUT',desc:'Affrontement soutenu contre des bots agressifs',theme:'survival',initialBots:12,respawn:true,respawnDelay:.8,botSpeedMul:1.12,botRangeMul:1.12,botAggro:1.1,botDamageMul:1.12,showHpBars:false},
 domination:{id:'domination',label:'DOMINATION',desc:'Contrôlez l’atrium central pour marquer 100 points',theme:'training',initialBots:10,respawn:true,respawnDelay:1.1,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,domination:true,scoreTarget:100,showHpBars:true}
 };
 this.gameMode='training';
-this.mapVersion='ARENA V4 TILE';
+this.mapVersion='ARENA V5 FLOW';
 this.modeScore={player:0,bots:0};
 /* Wave system state */
 this.wave=0;this.waveActive=false;this.waveRemaining=0;this.waveSpawnQueue=0;this._waveTimer=0;this._waveBreak=0;this._spawnAccum=0;
@@ -287,7 +287,7 @@ this._W(sx,sy,sz,rw,.35,rd,c);
 }
 };
 VG.prototype._buildArena=function(){
-/* COMPETITIVE TILE BLOCKOUT V3 — deterministic layout, no fake passages, no trap pits, clear 3-route flow. */
+/* COMPETITIVE TILE BLOCKOUT V5 — cleaner lanes, useful covers only, less visual/map clutter. */
 var W=0x1b2a38,C=0x244055,CR=0x335a74,RM=0x2e6a90;
 var tile=3;
 var layout=[
@@ -377,28 +377,20 @@ if(this.spawnNodes.high.length<3)this.spawnNodes.high.push([0,0],[-6,6],[6,-6]);
 if(this.spawnNodes.player.length<4)this.spawnNodes.player.push([-halfW+6,-halfH+6],[-halfW+6,halfH-6]);
 if(this.spawnNodes.enemy.length<4)this.spawnNodes.enemy.push([halfW-6,halfH-6],[halfW-6,-halfH+6]);
 
-// visual lane guides
-for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*2){this._D(lx,.04,-halfH+tile*1.1,1.4,.04,.12,0x00a6ff);this._D(lx,.04,halfH-tile*1.1,1.4,.04,.12,0x6add59);} 
-for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*2){this._D(-halfW+tile*1.1,.04,lz,.12,.04,1.4,0xa76bff);this._D(halfW-tile*1.1,.04,lz,.12,.04,1.4,0xffb24a);} 
-// corridor covers: symmetric and intentional
-for(var c=-21;c<=21;c+=7){
-if(c!==0){
-this._W(c,1,-9,2,2,2.2,CR);this._W(c,1,9,2,2,2.2,CR);
-this._W(-9,1,c,2.2,2,2,CR);this._W(9,1,c,2.2,2,2,CR);
+// minimal landmarks to keep orientation without blocking routes
+for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*4){
+this._D(lx,.04,-halfH+tile*.9,1.8,.04,.14,0x00a6ff);
+this._D(lx,.04,halfH-tile*.9,1.8,.04,.14,0x6add59);
 }
+for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*4){
+this._D(-halfW+tile*.9,.04,lz,.14,.04,1.8,0xa76bff);
+this._D(halfW-tile*.9,.04,lz,.14,.04,1.8,0xffb24a);
 }
-// side catwalks + ramps (controlled verticality)
-this._W(-24,2.4,0,4,1,16,0x264860);this._W(24,2.4,0,4,1,16,0x264860);
-this._addRamp(-27,-8,-24,0,2.4,3.2,RM);this._addRamp(-27,8,-24,0,2.4,3.2,RM);
-this._addRamp(27,-8,24,0,2.4,3.2,RM);this._addRamp(27,8,24,0,2.4,3.2,RM);
-// protected spawn bunkers (hard LOS break at exit)
-this._W(-30,1.8,-24,2,3.6,12,W);this._W(-24,1.8,-30,12,3.6,2,W);this._W(-26,1.2,-23,4,2.4,2,CR);
-this._W(30,1.8,24,2,3.6,12,W);this._W(24,1.8,30,12,3.6,2,W);this._W(26,1.2,23,4,2.4,2,CR);
-this._W(-30,1.8,24,2,3.6,12,W);this._W(-24,1.8,30,12,3.6,2,W);this._W(-26,1.2,23,4,2.4,2,CR);
-this._W(30,1.8,-24,2,3.6,12,W);this._W(24,1.8,-30,12,3.6,2,W);this._W(26,1.2,-23,4,2.4,2,CR);
-// lane accents
-for(var lx=-27;lx<=27;lx+=6){this._D(lx,.04,-30,1.6,.04,.12,0x00a8ff);this._D(lx,.04,30,1.6,.04,.12,0x66dd55);}
-for(var lz=-27;lz<=27;lz+=6){this._D(-30,.04,lz,.12,.04,1.6,0xa76bff);this._D(30,.04,lz,.12,.04,1.6,0xffaa49);}
+// only a few meaningful central covers
+this._W(0,1,-9,2.2,2,2.2,CR);
+this._W(0,1,9,2.2,2,2.2,CR);
+this._W(-9,1,0,2.2,2,2.2,CR);
+this._W(9,1,0,2.2,2,2.2,CR);
 };
 
 
@@ -641,6 +633,11 @@ var bn=document.getElementById('wave-banner');
 if(bn){var t='VAGUE '+w+' TERMIN\u00c9E  +'+cr+'\u00a9  +'+xp+'XP';if(tk>0)t+='  +'+tk+'\u2605';if(cy>0)t+='  +'+cy+'\u25c6';bn.textContent=t;bn.classList.add('show');clearTimeout(this._wbT);}
 /* Refill some ammo at end of wave (Survival has finite ammo) */
 if(this.P&&this.P.wp)this.P.res+=this.P.wp.mag*2;
+var md=this._mode();
+if(md.waveTarget&&this.wave>=md.waveTarget){
+this._modeComplete('EXTRACTION RÉUSSIE','Objectif atteint : vague '+this.wave+' / '+md.waveTarget+'.');
+return;
+}
 this._waveBreak=6;
 this.save();
 };
@@ -1503,8 +1500,8 @@ if(ob){
 if(md.killTarget)ob.innerText='OBJECTIF: '+this.mK+' / '+md.killTarget+' ÉLIMS';
 else if(md.teamBattle)ob.innerText='TDM: VANGUARD '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget+'  |  BOTS '+Math.floor(this.modeScore.bots);
 else if(md.domination)ob.innerText='ZONE: '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget+'  |  BOTS '+Math.floor(this.modeScore.bots);
-else if(md.id==='survival_plus')ob.innerText='SURVIE+ — VAGUES ÉLITES';
-else if(md.waves)ob.innerText='MODE SURVIE — VAGUES PROGRESSIVES';
+else if(md.id==='survival_plus')ob.innerText='SURVIE+ — VAGUE '+(this.wave||1)+' / '+(md.waveTarget||'∞');
+else if(md.waves)ob.innerText='SURVIE — VAGUE '+(this.wave||1)+' / '+(md.waveTarget||'∞');
 else if(md.id==='assault')ob.innerText='ASSAUT — PRESSION MAXIMALE';
 else ob.innerText='ENTRAÎNEMENT — SANDBOX';
 if(this.P.spawnShieldT>0)ob.innerText+='  |  BOUCLIER SPAWN '+this.P.spawnShieldT.toFixed(1)+'s';
