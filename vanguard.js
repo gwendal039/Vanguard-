@@ -343,6 +343,8 @@ this._W(30,1.8,-24,2,3.6,12,W);this._W(24,1.8,-30,12,3.6,2,W);this._W(26,1.2,-23
 for(var lx=-27;lx<=27;lx+=6){this._D(lx,.04,-30,1.6,.04,.12,0x00a8ff);this._D(lx,.04,30,1.6,.04,.12,0x66dd55);}
 for(var lz=-27;lz<=27;lz+=6){this._D(-30,.04,lz,.12,.04,1.6,0xa76bff);this._D(30,.04,lz,.12,.04,1.6,0xffaa49);}
 };
+
+
 /* SAFE SPAWN */
 VG.prototype._clr=function(x,z){
 var b=new THREE.Box3(new THREE.Vector3(x-.6,0,z-.6),new THREE.Vector3(x+.6,2,z+.6));
@@ -912,7 +914,7 @@ var tc=Math.abs(x-this.cam.position.x)<10&&Math.abs(z-this.cam.position.z)<10;
 ok=!tc&&this._clr(x,z);}while(!ok&&att<45);
 var gl=this._groundAt(x,z,10,.5);
 r.mesh.position.set(x,gl+1,z);this.scene.add(r.mesh);
-this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite,beh:{state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0}});
+this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite,beh:{state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0,stuckT:0,lastX:x,lastZ:z}});
 };
 VG.prototype.dmgEnemy=function(en,dmg,isHeadshot){
 if(!en||!en.mesh)return;en.hp-=dmg;
@@ -1083,6 +1085,7 @@ for(var i=this.enemies.length-1;i>=0;i--){
 var e=this.enemies[i];if(!e||!e.mesh)continue;
 if(!e.beh)e.beh={state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0};
 var ep=e.mesh.position,dx=pP.x-ep.x,dz=pP.z-ep.z,dist=Math.sqrt(dx*dx+dz*dz);
+if(e.beh){var moved=Math.abs((e.beh.lastX||ep.x)-ep.x)+Math.abs((e.beh.lastZ||ep.z)-ep.z);if(moved<.03)e.beh.stuckT=(e.beh.stuckT||0)+dt;else e.beh.stuckT=0;e.beh.lastX=ep.x;e.beh.lastZ=ep.z;}
 var bt=DATA.botTypes[e.type]||DATA.botTypes[0];
 var spd=bt.speed*0.92*(md.botSpeedMul||1);
 e.mesh.lookAt(pP.x,ep.y,pP.z);
@@ -1165,6 +1168,7 @@ var eGl=this._groundAt(ep.x,ep.z,ep.y-1,.5);
 ep.y=eGl+1;
 var emh=(this.mapHalf||34)-1.6;
 ep.x=Math.max(-emh,Math.min(emh,ep.x));ep.z=Math.max(-emh,Math.min(emh,ep.z));
+if(e.beh&&e.beh.stuckT>1.8){var n=this._closestNode(ep.x,ep.z,'patrol');if(n&&this._clr(n[0],n[1])){ep.x=n[0];ep.z=n[1];ep.y=this._groundAt(ep.x,ep.z,ep.y,.5)+1;}e.beh.stuckT=0;}
 /* Leg animation */
 if(Math.abs(mx)>.01||Math.abs(mz)>.01){e.legP+=dt*8;var ls=Math.sin(e.legP)*.15;var pts=e.mesh.userData.parts;if(pts&&pts.length>=16){if(pts[12])pts[12].position.z=ls*.15;if(pts[13])pts[13].position.z=-ls*.15;}}
 
