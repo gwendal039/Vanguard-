@@ -546,8 +546,14 @@ body {
     top: 58px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: .86rem;
-    letter-spacing: 1px;
+    font-size: .82rem;
+    letter-spacing: .9px;
+    line-height: 1.35;
+    text-align: center;
+    white-space: nowrap;
+    max-width: min(92vw, 980px);
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 4px 10px;
     border: 1px solid rgba(255,255,255,.16);
     background: rgba(5,10,18,.72);

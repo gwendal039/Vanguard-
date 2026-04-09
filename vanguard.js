@@ -65,14 +65,14 @@ this.wM=[];this.wB=[];this.enemies=[];this.proj=[];this.tracers=[];this.pickups=
 this.bobT=0;this.recZ=0;this.recX=0;
 this.P={h:1.65,baseH:1.65,crouchH:1.05,curH:1.65,crouch:false,vx:0,vz:0,vy:0,og:false,hp:100,mhp:100,spd:12,baseSpd:12,wp:null,ammo:0,res:0,lf:0,rld:false,wm:null,dm:1,lastHit:0,regenRate:5,lootMul:1,_mgSpin:0,dashCd:0,dashT:0,dashVx:0,dashVz:0,ads:false,adsT:0,baseFov:80,wpHipPos:null,wpAdsPos:null,bloom:0,jumpQ:0,coyoteT:0,spawnShieldT:0};
 this.keys={};this.md=false;this.mx=0;this.my=0;
-this.cfg={lookSens:.0031,adsLookMul:.84,lookSmooth:.22,jumpBuffer:.12,coyote:.1};
+this.cfg={lookSens:.0019,adsLookMul:.72,lookSmooth:.4,jumpBuffer:.12,coyote:.1};
 this._smMx=0;this._smMy=0;
 this.mK=0;this.mXP=0;this._spin=false;
 this.activeBoosts=[];
 this.modeDefs={
 training:{id:'training',label:'ENTRAÎNEMENT',desc:'Routes guidées et pression réduite',theme:'training',initialBots:8,respawn:true,respawnDelay:1.5,botSpeedMul:.9,botRangeMul:.88,botAggro:.9,botDamageMul:.9,showHpBars:true},
-survival:{id:'survival',label:'SURVIE',desc:'Tenez 6 vagues puis extraction',theme:'survival',waves:true,waveTarget:6,showHpBars:false},
-survival_plus:{id:'survival_plus',label:'SURVIE+',desc:'Tenez 9 vagues élites puis extraction',theme:'survival',waves:true,waveTarget:9,showHpBars:false,botSpeedMul:1.08,botRangeMul:1.12,botAggro:1.14,botDamageMul:1.12},
+survival:{id:'survival',label:'SURVIE',desc:'Timer global + extraction + kill quota',theme:'survival',waves:true,showHpBars:false,missionArcade:{duration:720,killQuota:75,surviveHp:35,extractWave:4,stageEvery:90,waveCap:10}},
+survival_plus:{id:'survival_plus',label:'SURVIE+',desc:'Arcade hardcore 15 min + objectifs secondaires',theme:'survival',waves:true,showHpBars:false,botSpeedMul:1.08,botRangeMul:1.12,botAggro:1.14,botDamageMul:1.12,missionArcade:{duration:900,killQuota:110,surviveHp:45,extractWave:5,stageEvery:75,waveCap:14}},
 deathmatch:{id:'deathmatch',label:'MATCH À MORT',desc:'Atteignez 35 éliminations',theme:'training',initialBots:10,respawn:true,respawnDelay:1.05,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,killTarget:35,showHpBars:true},
 teamdm:{id:'teamdm',label:'TEAM DEATHMATCH',desc:'Course au score : Vanguard vs bots',theme:'training',initialBots:12,respawn:true,respawnDelay:.9,botSpeedMul:1.02,botRangeMul:1.03,botAggro:1.05,botDamageMul:1,teamBattle:true,scoreTarget:45,showHpBars:true},
 assault:{id:'assault',label:'ASSAUT',desc:'Affrontement soutenu contre des bots agressifs',theme:'survival',initialBots:12,respawn:true,respawnDelay:.8,botSpeedMul:1.12,botRangeMul:1.12,botAggro:1.1,botDamageMul:1.12,showHpBars:false},
@@ -83,6 +83,7 @@ this.mapVersion='ARENA V5 FLOW';
 this.modeScore={player:0,bots:0};
 /* Wave system state */
 this.wave=0;this.waveActive=false;this.waveRemaining=0;this.waveSpawnQueue=0;this._waveTimer=0;this._waveBreak=0;this._spawnAccum=0;
+this._initMissionArcade();
 this._actx=null;this._menuDrone=null;this._combatDrone=null;
 this.mm={canvas:null,ctx:null,size:180};
 this.initWorld();this.initUI();this.initEvents();
@@ -634,6 +635,10 @@ if(bn){var t='VAGUE '+w+' TERMIN\u00c9E  +'+cr+'\u00a9  +'+xp+'XP';if(tk>0)t+=' 
 /* Refill some ammo at end of wave (Survival has finite ammo) */
 if(this.P&&this.P.wp)this.P.res+=this.P.wp.mag*2;
 var md=this._mode();
+if(this.mission.active&&this.wave>=this.mission.waveCap){
+this._waveBreak=0;
+return;
+}
 if(md.waveTarget&&this.wave>=md.waveTarget){
 this._modeComplete('EXTRACTION RÉUSSIE','Objectif atteint : vague '+this.wave+' / '+md.waveTarget+'.');
 return;
@@ -641,6 +646,55 @@ return;
 this._waveBreak=6;
 this.save();
 };
+VG.prototype._fmtTimer=function(v){
+var t=Math.max(0,Math.ceil(v||0));
+var m=Math.floor(t/60),s=t%60;
+return m+':'+String(s).padStart(2,'0');
+};
+VG.prototype._initMissionArcade=function(){
+var ma=this._mode().missionArcade;
+if(!ma){this.mission={active:false,timeLeft:0,timeTotal:0,killQuota:0,surviveHp:0,extractWave:0,stageEvery:0,nextStageAt:0,stage:1,extractReady:false,failed:false,stageMul:1,waveCap:999};return;}
+this.mission={active:true,timeLeft:ma.duration,timeTotal:ma.duration,killQuota:ma.killQuota,surviveHp:ma.surviveHp,extractWave:ma.extractWave||4,stageEvery:ma.stageEvery||90,nextStageAt:ma.stageEvery||90,stage:1,extractReady:false,failed:false,waveCap:ma.waveCap||999,stageMul:1};
+};
+VG.prototype._updateMissionArcade=function(dt){
+var ms=this.mission;if(!ms||!ms.active||this.state!=='PLAYING')return;
+ms.timeLeft=Math.max(0,ms.timeLeft-dt);
+if(!ms.extractReady&&this.wave>=ms.extractWave){
+ms.extractReady=true;
+var bn=document.getElementById('wave-banner');
+if(bn){bn.textContent="FENÊTRE D'EXTRACTION OUVERTE";bn.classList.add('show');clearTimeout(this._wbT);var self=this;this._wbT=setTimeout(function(){bn.classList.remove('show');},2200);}
+}
+var elapsed=ms.timeTotal-ms.timeLeft;
+while(elapsed>=ms.nextStageAt){
+ms.stage++;
+ms.nextStageAt+=ms.stageEvery;
+ms.stageMul=Math.min(1.55,1+(ms.stage-1)*.07);
+this.sd.resources.credits+=25+ms.stage*8;
+this.sd.resources.parts+=8+ms.stage*2;
+var bn2=document.getElementById('wave-banner');
+if(bn2){bn2.textContent='ARCADE STAGE '+ms.stage+' — PRESSION +';bn2.classList.add('show');clearTimeout(this._wbT);var self2=this;this._wbT=setTimeout(function(){bn2.classList.remove('show');},1800);}
+}
+if(ms.timeLeft<=0){
+this._resolveMissionArcade();
+}
+};
+VG.prototype._resolveMissionArcade=function(){
+var ms=this.mission;if(!ms||!ms.active||ms.failed)return;
+ms.failed=true;
+var hpOk=Math.floor(this.P.hp)>=ms.surviveHp;
+var killsOk=this.mK>=ms.killQuota;
+var exOk=!!ms.extractReady;
+if(hpOk&&killsOk&&exOk){
+var bonusCr=240+this.mK*3,bonusXp=220+this.wave*18,bonusTk=2+Math.floor(this.wave/4);
+this.sd.resources.credits+=bonusCr;this.sd.resources.tokens+=bonusTk;this.sd.stats.totalCreditsEarned+=bonusCr;this.addXP(bonusXp);
+this._modeComplete('EXTRACTION VALIDÉE','Mission arcade réussie — +'+bonusCr+'© +'+bonusXp+'XP +'+bonusTk+'★');
+}else{
+var miss=[];if(!exOk)miss.push('extraction');if(!killsOk)miss.push('quota kills');if(!hpOk)miss.push('survie HP');
+this._modeComplete('MISSION ÉCHOUÉE','Objectifs manqués: '+miss.join(', '));
+}
+this.save();
+};
+
 /* PHYSICS */
 VG.prototype._groundAt=function(x,z,curY,hw){
 var gl=0;
@@ -945,6 +999,7 @@ hpMul=this._waveCfg.hpMul;dmgMul=this._waveCfg.dmgMul;
 if(Math.random()<this._waveCfg.eliteChance){isElite=true;hpMul*=1.6;dmgMul*=1.25;}
 }
 if(md.botDamageMul)dmgMul*=md.botDamageMul;
+if(this.mission.active)dmgMul*=this.mission.stageMul||1;
 var scaledHp=Math.floor(r.hp*hpMul);
 if(isElite&&r.mesh.userData.parts){
 /* Tint elite enemies with a red/gold accent on shoulders */
@@ -1141,7 +1196,8 @@ if(!e.beh)e.beh={state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0};
 var ep=e.mesh.position,dx=pP.x-ep.x,dz=pP.z-ep.z,dist=Math.sqrt(dx*dx+dz*dz);
 if(e.beh){var moved=Math.abs((e.beh.lastX||ep.x)-ep.x)+Math.abs((e.beh.lastZ||ep.z)-ep.z);if(moved<.03)e.beh.stuckT=(e.beh.stuckT||0)+dt;else e.beh.stuckT=0;e.beh.lastX=ep.x;e.beh.lastZ=ep.z;}
 var bt=DATA.botTypes[e.type]||DATA.botTypes[0];
-var spd=bt.speed*0.92*(md.botSpeedMul||1);
+var arcadeMul=this.mission.active?(this.mission.stageMul||1):1;
+var spd=bt.speed*0.92*(md.botSpeedMul||1)*arcadeMul;
 e.mesh.lookAt(pP.x,ep.y,pP.z);
 /* Billboard HP bars toward camera */
 if(e.mesh.userData.hpBar){e.mesh.userData.hpBar.lookAt(pP);e.mesh.userData.hpBg.lookAt(pP);}
@@ -1149,7 +1205,7 @@ if(e.mesh.userData.hpLbl)e.mesh.userData.hpLbl.lookAt(pP);
 
 var mx=0,mz=0;
 /* Movement AI per weapon type */
-var aggro=md.botAggro||1;
+var aggro=(md.botAggro||1)*arcadeMul;
 var idealDist=bt.idealDist/aggro;
 var minDist=bt.minDist/Math.max(.8,aggro*.95);
 if(md.waves){
@@ -1231,7 +1287,7 @@ var muzzle=(e.mesh.userData&&e.mesh.userData.weaponMuzzleLocal)?e.mesh.userData.
 fromV.copy(muzzle||new THREE.Vector3(ep.x,ep.y+.6,ep.z));toV.set(pP.x,pP.y,pP.z);hasLOS=this._hasLOS(fromV,toV);
 var sr=bt.fireRate;
 var maxRange=e.type===2?19:e.type===1?32:e.type===3?70:48;
-maxRange=Math.floor(maxRange*(md.botRangeMul||1));
+maxRange=Math.floor(maxRange*(md.botRangeMul||1)*arcadeMul);
 if(md.waves)maxRange=Math.floor(maxRange*1.35);
 /* Shotgun bots only fire when close enough */
 var shotgunRange=md.waves?23:19;
@@ -1364,6 +1420,7 @@ this.state='PLAYING';
 this.modeScore.player=0;this.modeScore.bots=0;
 /* Reset wave state */
 this.wave=0;this.waveActive=false;this.waveRemaining=0;this.waveSpawnQueue=0;this._waveTimer=0;this._waveBreak=0;this._spawnAccum=0;
+this._initMissionArcade();
 /* Toggle HUD wave widget + mode badge */
 var wEl=document.getElementById('hud-wave');if(wEl){if(md.waves)wEl.classList.remove('hidden');else wEl.classList.add('hidden');}
 var mEl=document.getElementById('hud-mode-badge');if(mEl)mEl.textContent=md.label;
@@ -1497,7 +1554,12 @@ else S('hud-wave-remain',Math.max(0,this.waveRemaining||0));
 }
 var ob=document.getElementById('hud-objective');
 if(ob){
-if(md.killTarget)ob.innerText='OBJECTIF: '+this.mK+' / '+md.killTarget+' ÉLIMS';
+if(this.mission.active){
+var ms=this.mission;
+var hpNow=Math.max(0,Math.floor(this.P.hp));
+ob.innerText='MISSION '+this._fmtTimer(ms.timeLeft)+' | EXTRACTION '+(ms.extractReady?'OK':'VAGUE '+ms.extractWave)+' | KILLS '+this.mK+'/'+ms.killQuota+' | SURVIE '+hpNow+'/'+ms.surviveHp+' HP';
+}
+else if(md.killTarget)ob.innerText='OBJECTIF: '+this.mK+' / '+md.killTarget+' ÉLIMS';
 else if(md.teamBattle)ob.innerText='TDM: VANGUARD '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget+'  |  BOTS '+Math.floor(this.modeScore.bots);
 else if(md.domination)ob.innerText='ZONE: '+Math.floor(this.modeScore.player)+' / '+md.scoreTarget+'  |  BOTS '+Math.floor(this.modeScore.bots);
 else if(md.id==='survival_plus')ob.innerText='SURVIE+ — VAGUE '+(this.wave||1)+' / '+(md.waveTarget||'∞');
@@ -1673,8 +1735,8 @@ ctx.fillStyle='rgba(180,230,255,.9)';ctx.font='11px Rajdhani';ctx.fillText(this.
 VG.prototype.loop=function(){
 var self=this;requestAnimationFrame(function(){self.loop();});
 var dt=Math.min(this.clock.getDelta(),.05);
-if(this.state==='PLAYING'){this.updatePhys(dt);this.handleShoot();this.updateEnemies(dt);this._updatePickups(dt);this.updateHUD();this._drawMinimap();}
-if(this.state==='PLAYING')this._updateModeObjectives(dt);
+if(this.state==='PLAYING'){this.updatePhys(dt);this.handleShoot();this.updateEnemies(dt);this._updatePickups(dt);this._updateMissionArcade(dt);this.updateHUD();this._drawMinimap();}
+if(this.state==='PLAYING'&&!this.mission.active)this._updateModeObjectives(dt);
 this.ren.render(this.scene,this.cam);
 };
 window.app=new VG();
