@@ -421,14 +421,17 @@ body {
 
 #crosshair {
     position: absolute; top: 50%; left: 50%;
+    --crosshair-gap: 9px;
     width: 4px; height: 4px;
     background: var(--primary); border-radius: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 0 0 6px var(--primary);
+    transition: opacity .1s ease, transform .08s ease-out;
 }
 #crosshair::before, #crosshair::after { content: ''; position: absolute; background: var(--primary); }
-#crosshair::before { width: 10px; height: 1.5px; top: 1px; left: -14px; box-shadow: 16px 0 0 var(--primary); }
-#crosshair::after  { width: 1.5px; height: 10px; top: -14px; left: 1px; box-shadow: 0 16px 0 var(--primary); }
+#crosshair::before { width: 9px; height: 1.5px; top: 1px; left: calc(-1 * var(--crosshair-gap) - 9px); box-shadow: calc(var(--crosshair-gap) * 2 + 9px) 0 0 var(--primary); }
+#crosshair::after  { width: 1.5px; height: 9px; top: calc(-1 * var(--crosshair-gap) - 9px); left: 1px; box-shadow: 0 calc(var(--crosshair-gap) * 2 + 9px) 0 var(--primary); }
+#crosshair.ads-active { opacity: .7; transform: translate(-50%, -50%) scale(.86); }
 #crosshair.dash-flash { background: #ffdd44; box-shadow: 0 0 18px #ffdd44; transform: translate(-50%,-50%) scale(1.6); transition: transform .15s ease-out; }
 
 /* ══════════════ MODE BADGES & WAVE HUD ══════════════ */
@@ -555,6 +558,7 @@ body {
     opacity: 0; transition: opacity 0.05s;
 }
 #hit-marker.show { opacity: 1; }
+#hit-marker.headshot::before, #hit-marker.headshot::after { background: #ff4d4d; box-shadow: 0 0 8px rgba(255, 77, 77, .7); }
 #hit-marker::before, #hit-marker::after { content: ''; position: absolute; background: #fff; }
 #hit-marker::before { width: 100%; height: 2px; top: 7px; left: 0; }
 #hit-marker::after  { width: 2px; height: 100%; top: 0; left: 7px; }
