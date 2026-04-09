@@ -1,4 +1,4 @@
-var DATA={weapons:{'Assault Rifle':{dmg:28,fireRate:.12,mag:30,reload:1.5,color:0x445566,spread:.015,auto:true,range:[0,30,60],falloff:[1,.78,.42]},'SMG':{dmg:18,fireRate:.07,mag:40,reload:1.2,color:0x334455,spread:.025,auto:true,range:[0,22,45],falloff:[1,.65,.3]},'Shotgun':{dmg:55,fireRate:.8,mag:8,reload:2,color:0x223344,spread:.08,auto:false,pellets:5,range:[0,10,22],falloff:[1,.35,.08]},'Sniper':{dmg:120,fireRate:1.5,mag:5,reload:2.5,color:0x111111,spread:.002,auto:false,range:[0,50,120],falloff:[.6,1,1]},'Minigun':{dmg:20,fireRate:.06,mag:100,reload:3,color:0x554422,spread:.03,auto:true,range:[0,25,50],falloff:[1,.6,.25]},'Plasma Rifle':{dmg:35,fireRate:.2,mag:20,reload:2,color:0x002244,spread:.008,auto:true,range:[0,35,70],falloff:[1,.8,.5]}},classes:{'Soldier':{hp:100,speed:8.4,weapon:'Assault Rifle',cost:0,color:0x2244aa,desc:'Balanced — AR + medium armor'},'Scout':{hp:75,speed:10.6,weapon:'SMG',cost:15,color:0x22aa44,desc:'Fast + light — SMG specialist'},'Heavy':{hp:200,speed:5.5,weapon:'Minigun',cost:25,color:0xaa4422,desc:'Tank — Minigun + max HP'},'Sniper':{hp:80,speed:7.7,weapon:'Sniper',cost:20,color:0x555555,desc:'Long range — 1 shot 1 kill'},'Breacher':{hp:110,speed:7.9,weapon:'Shotgun',cost:20,color:0xaa8822,desc:'CQC specialist — Shotgun'},'Phantom':{hp:85,speed:9.2,weapon:'Plasma Rifle',cost:35,color:0x4400aa,desc:'Energy weapons — plasma tech'}},
+var DATA={weapons:{'Assault Rifle':{dmg:28,fireRate:.12,mag:30,reload:1.5,color:0x445566,spread:.015,auto:true,range:[0,30,60],falloff:[1,.78,.42]},'SMG':{dmg:18,fireRate:.07,mag:40,reload:1.2,color:0x334455,spread:.025,auto:true,range:[0,22,45],falloff:[1,.65,.3]},'Shotgun':{dmg:55,fireRate:.8,mag:8,reload:2,color:0x223344,spread:.08,auto:false,pellets:5,range:[0,10,22],falloff:[1,.35,.08]},'Sniper':{dmg:120,fireRate:1.5,mag:5,reload:2.5,color:0x111111,spread:.002,auto:false,range:[0,50,120],falloff:[.6,1,1]},'Minigun':{dmg:20,fireRate:.06,mag:100,reload:3,color:0x554422,spread:.03,auto:true,range:[0,25,50],falloff:[1,.6,.25]},'Plasma Rifle':{dmg:35,fireRate:.2,mag:20,reload:2,color:0x002244,spread:.008,auto:true,range:[0,35,70],falloff:[1,.8,.5]}},classes:{'Soldier':{hp:100,speed:7.9,weapon:'Assault Rifle',cost:0,color:0x2244aa,desc:'Balanced — AR + medium armor'},'Scout':{hp:75,speed:9.4,weapon:'SMG',cost:15,color:0x22aa44,desc:'Fast + light — SMG specialist'},'Heavy':{hp:200,speed:5.2,weapon:'Minigun',cost:25,color:0xaa4422,desc:'Tank — Minigun + max HP'},'Sniper':{hp:80,speed:7.1,weapon:'Sniper',cost:20,color:0x555555,desc:'Long range — 1 shot 1 kill'},'Breacher':{hp:110,speed:7.4,weapon:'Shotgun',cost:20,color:0xaa8822,desc:'CQC specialist — Shotgun'},'Phantom':{hp:85,speed:8.5,weapon:'Plasma Rifle',cost:35,color:0x4400aa,desc:'Energy weapons — plasma tech'}},
 skins:[
 {id:'default',name:'STANDARD',rarity:'common',color:0x4488cc,accent:0x00e5ff,emissive:0x002244,glow:.25,mat:'matte',pattern:'solid',tracer:0xffdd44},
 {id:'crimson',name:'CRIMSON OPS',rarity:'common',color:0xaa2222,accent:0xff4444,emissive:0x330000,glow:.3,mat:'matte',pattern:'stripe',tracer:0xff4444},
@@ -285,39 +285,74 @@ this._W(sx,sy,sz,rw,.35,rd,c);
 }
 };
 VG.prototype._buildArena=function(){
-/* COMPACT FPS LAYOUT — corridors, hard cover, vertical loops and controlled sight lines. */
-var W=0x202e3f,C=0x26374a,CR=0x2f4358,RM=0x2b5674,FL=0x0d1620;
-this.mapHalf=34;
-this.spawnNodes={player:[[-24,-20],[24,20],[-24,20],[24,-20],[-8,-24],[8,24]],enemy:[[-26,0],[26,0],[0,-26],[0,26],[-18,18],[18,-18],[-20,-6],[20,6]],high:[[0,-10],[0,10]]};
-// boundary
-this._W(0,4,-34,68,8,2,W);this._W(0,4,34,68,8,2,W);this._W(-34,4,0,2,8,68,W);this._W(34,4,0,2,8,68,W);
-this._G(0,.11,-33.4,64,.08,.1,0x00b8ff);this._G(0,.11,33.4,64,.08,.1,0x00b8ff);
-// central atrium ring + LOS breakers
-this._D(0,.04,0,15,.08,15,FL,0x002338);
-this._W(0,1.2,-6.2,3,2.4,1.2,CR);this._W(0,1.2,6.2,3,2.4,1.2,CR);
-this._W(-6.2,1.2,0,1.2,2.4,3,CR);this._W(6.2,1.2,0,1.2,2.4,3,CR);
-this._W(0,1,-1.7,1.6,2,1.6,C);this._W(0,1,1.7,1.6,2,1.6,C);
-// north/south corridor walls
-this._W(-11,1.5,-18,2,3,20,W);this._W(11,1.5,-18,2,3,20,W);
-this._W(-11,1.5,18,2,3,20,W);this._W(11,1.5,18,2,3,20,W);
-// east/west corridors
-this._W(-18,1.5,-11,20,3,2,W);this._W(-18,1.5,11,20,3,2,W);
-this._W(18,1.5,-11,20,3,2,W);this._W(18,1.5,11,20,3,2,W);
-// lane blockers / cover islands
-this._W(-19,1.1,0,3.4,2.2,2.4,CR);this._W(19,1.1,0,3.4,2.2,2.4,CR);
-this._W(0,1.1,-19,2.4,2.2,3.4,CR);this._W(0,1.1,19,2.4,2.2,3.4,CR);
-this._W(-24,1,9,3,2,1.2,C);this._W(24,1,-9,3,2,1.2,C);this._W(-9,1,-24,1.2,2,3,C);this._W(9,1,24,1.2,2,3,C);
-// compact vertical gameplay: catwalks + stairs
-this._W(0,1.6,-10,8,3.2,3.5,C);this._W(0,1.6,10,8,3.2,3.5,C);
-this._W(-10,1.6,0,3.5,3.2,8,C);this._W(10,1.6,0,3.5,3.2,8,C);
-this._addStairs(-5.5,-14,0,1,6,2.2,RM);this._addStairs(5.5,14,0,-1,6,2.2,RM);
-this._addStairs(-14,5.5,1,0,6,2.2,RM);this._addStairs(14,-5.5,-1,0,6,2.2,RM);
-this._W(0,3.2,0,7,1,7,0x1b2f43); // top hub
-// roof trims / readability
-this._D(0,4.7,-18,26,.16,.16,0x13202c,0x003f66);this._D(0,4.7,18,26,.16,.16,0x13202c,0x224500);
-this._D(-18,4.7,0,.16,.16,26,0x13202c,0x4a1f66);this._D(18,4.7,0,.16,.16,26,0x13202c,0x663600);
-for(var lx=-24;lx<=24;lx+=8){this._D(lx,.03,-28,2,.04,.12,0x00aaff);this._D(lx,.03,28,2,.04,.12,0x66cc22);}
-for(var lz=-24;lz<=24;lz+=8){this._D(-28,.03,lz,.12,.04,2,0xaa66ff);this._D(28,.03,lz,.12,.04,2,0xffaa44);}
+/* DENSE MULTIPLAYER LAYOUT — compact 3-lane arena with layered interiors, cross connectors, and vertical loops. */
+var W=0x1e2f3f,C=0x25384a,CR=0x314a60,RM=0x2e5d7d,FL=0x0c141d;
+this.mapHalf=33;
+this.spawnNodes={
+player:[[-27,-22],[-26,-10],[-23,19],[25,22],[26,9],[23,-19],[-4,-27],[4,27]],
+enemy:[[27,22],[26,10],[23,-19],[-25,-22],[-26,-9],[-23,19],[5,27],[-5,-27]],
+high:[[-8,11],[8,-11],[0,0]],
+patrol:[[-24,-24],[-24,-9],[-24,9],[-24,24],[-12,-24],[-12,-10],[-12,0],[-12,10],[-12,24],[0,-24],[0,-12],[0,0],[0,12],[0,24],[12,-24],[12,-10],[12,0],[12,10],[12,24],[24,-24],[24,-9],[24,9],[24,24],[-20,0],[20,0],[-8,18],[8,-18],[-2,18],[2,-18]],
+flank:[[-28,0],[28,0],[0,-28],[0,28],[-18,18],[18,-18],[-18,-18],[18,18]]
+};
+// boundaries + route colors
+this._W(0,4,-33,66,8,2,W);this._W(0,4,33,66,8,2,W);this._W(-33,4,0,2,8,66,W);this._W(33,4,0,2,8,66,W);
+this._D(0,.06,-32.35,60,.1,.12,0x00b7ff,0x003355);this._D(0,.06,32.35,60,.1,.12,0x5dda33,0x112f00);
+this._D(-32.35,.06,0,.12,.1,60,0xae58ff,0x2a1135);this._D(32.35,.06,0,.12,.1,60,0xffa63a,0x381f00);
+// floor sectors with distinct tones
+this._D(-20,.03,-20,22,.05,22,FL,0x001626);
+this._D(20,.03,20,22,.05,22,FL,0x1d1500);
+this._D(-20,.03,20,22,.05,22,FL,0x190d20);
+this._D(20,.03,-20,22,.05,22,FL,0x18200e);
+this._D(0,.03,0,20,.05,20,0x111a24,0x001e33);
+// four dense structures around center
+this._W(-10,1.8,-10,9,3.6,9,C);this._W(10,1.8,10,9,3.6,9,C);
+this._W(-10,1.8,10,9,3.6,9,C);this._W(10,1.8,-10,9,3.6,9,C);
+// interior corridors
+this._W(0,1.5,-16,10,3,2,W);this._W(0,1.5,16,10,3,2,W);
+this._W(-16,1.5,0,2,3,10,W);this._W(16,1.5,0,2,3,10,W);
+// lane blockers for controlled LOS
+for(var i=-24;i<=24;i+=12){
+if(i!==0){
+this._W(i,1.1,-3,2.4,2.2,3.2,CR);this._W(i,1.1,3,2.4,2.2,3.2,CR);
+this._W(-3,1.1,i,3.2,2.2,2.4,CR);this._W(3,1.1,i,3.2,2.2,2.4,CR);
+}
+}
+// spawn pocket protection
+this._W(-28,1.6,-16,3,3.2,10,W);this._W(-24,1.6,-26,10,3.2,3,W);
+this._W(28,1.6,16,3,3.2,10,W);this._W(24,1.6,26,10,3.2,3,W);
+this._W(-28,1.6,16,3,3.2,10,W);this._W(-24,1.6,26,10,3.2,3,W);
+this._W(28,1.6,-16,3,3.2,10,W);this._W(24,1.6,-26,10,3.2,3,W);
+// central vertical loop
+this._W(0,1.4,0,6,2.8,6,0x1f3348);
+this._W(0,3.25,-8,7,1,2.6,0x21425b);this._W(0,3.25,8,7,1,2.6,0x21425b);
+this._W(-8,3.25,0,2.6,1,7,0x21425b);this._W(8,3.25,0,2.6,1,7,0x21425b);
+this._W(0,3.55,0,4,1.2,4,0x1d2f40);
+this._addStairs(-5.2,-11,0,1,7,2.4,RM);this._addStairs(5.2,11,0,-1,7,2.4,RM);
+this._addStairs(-11,5.2,1,0,7,2.4,RM);this._addStairs(11,-5.2,-1,0,7,2.4,RM);
+// side balconies + ramps for flank routes
+this._W(-23,2.3,0,4,1,12,0x203d50);this._W(23,2.3,0,4,1,12,0x203d50);
+this._addRamp(-25,-6,-23,0,2.3,3.5,RM);this._addRamp(-25,6,-23,0,2.3,3.5,RM);
+this._addRamp(25,-6,23,0,2.3,3.5,RM);this._addRamp(25,6,23,0,2.3,3.5,RM);
+// interior partial blockers
+this._W(-10,1,-5.2,2.8,2,1.1,CR);this._W(-10,1,5.2,2.8,2,1.1,CR);
+this._W(10,1,-5.2,2.8,2,1.1,CR);this._W(10,1,5.2,2.8,2,1.1,CR);
+this._W(-5.2,1,-10,1.1,2,2.8,CR);this._W(5.2,1,-10,1.1,2,2.8,CR);
+this._W(-5.2,1,10,1.1,2,2.8,CR);this._W(5.2,1,10,1.1,2,2.8,CR);
+// zone identity landmarks (distinct silhouettes)
+this._W(-24,2.1,-24,6,4.2,6,0x1f3f58);this._W(-24,4.2,-24,3,1.2,3,0x2f6b8e); // blue command post
+this._W(24,2.1,24,6,4.2,6,0x4a3620);this._W(24,4.2,24,3,1.2,3,0x9b6b2a); // orange foundry
+this._W(-24,2.1,24,6,4.2,6,0x3b224a);this._W(-24,4.2,24,3,1.2,3,0x8a4fc3); // purple lab
+this._W(24,2.1,-24,6,4.2,6,0x27411f);this._W(24,4.2,-24,3,1.2,3,0x63a53f); // green depot
+// extra connectors and micro-covers to break long peeks
+this._W(0,2.4,-24,12,1,2.2,0x2a4155);this._W(0,2.4,24,12,1,2.2,0x2a4155);
+this._W(-24,2.4,0,2.2,1,12,0x2a4155);this._W(24,2.4,0,2.2,1,12,0x2a4155);
+for(var cv=-18;cv<=18;cv+=9){
+this._W(cv,1,-14,1.4,2,1.4,0x395167);this._W(cv,1,14,1.4,2,1.4,0x395167);
+this._W(-14,1,cv,1.4,2,1.4,0x395167);this._W(14,1,cv,1.4,2,1.4,0x395167);
+}
+for(var lx=-24;lx<=24;lx+=6){this._D(lx,.04,-27,1.6,.04,.12,0x00a8ff);this._D(lx,.04,27,1.6,.04,.12,0x60d73d);}
+for(var lz=-24;lz<=24;lz+=6){this._D(-27,.04,lz,.12,.04,1.6,0xa961ff);this._D(27,.04,lz,.12,.04,1.6,0xffb24a);}
 };
 /* SAFE SPAWN */
 VG.prototype._clr=function(x,z){
@@ -326,8 +361,21 @@ for(var i=0;i<this.wB.length;i++)if(b.intersectsBox(this.wB[i]))return false;
 return true;
 };
 VG.prototype._safeSpawn=function(){
-var s=(this.spawnNodes&&this.spawnNodes.player)?this.spawnNodes.player:[[0,4],[5,4],[-5,4],[10,10],[-10,-10],[0,-4],[8,8],[-8,-8],[12,0],[-12,0]];
-for(var i=0;i<s.length;i++)if(this._clr(s[i][0],s[i][1]))return s[i];
+var s=(this.spawnNodes&&this.spawnNodes.player)?this.spawnNodes.player:[[0,4],[5,4],[-5,4],[10,10],[-10,-10],[0,-4]];
+var best=null,bestScore=-1;
+for(var i=0;i<s.length;i++){
+if(!this._clr(s[i][0],s[i][1]))continue;
+var minED=9999;
+for(var ei=0;ei<this.enemies.length;ei++){
+var em=this.enemies[ei]&&this.enemies[ei].mesh?this.enemies[ei].mesh.position:null;
+if(!em)continue;
+var dx=s[i][0]-em.x,dz=s[i][1]-em.z,d=Math.sqrt(dx*dx+dz*dz);
+if(d<minED)minED=d;
+}
+var score=minED===9999?100:minED;
+if(score>bestScore){bestScore=score;best=s[i];}
+}
+if(best)return best;
 var h=this.mapHalf||32;
 for(var x=-(h-2);x<=(h-2);x+=4)for(var z=-(h-2);z<=(h-2);z+=4)if(this._clr(x,z))return[x,z];
 return[0,2];
@@ -871,7 +919,7 @@ var tc=Math.abs(x-this.cam.position.x)<10&&Math.abs(z-this.cam.position.z)<10;
 ok=!tc&&this._clr(x,z);}while(!ok&&att<45);
 var gl=this._groundAt(x,z,10,.5);
 r.mesh.position.set(x,gl+1,z);this.scene.add(r.mesh);
-this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite});
+this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite,beh:{state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0}});
 };
 VG.prototype.dmgEnemy=function(en,dmg,isHeadshot){
 if(!en||!en.mesh)return;en.hp-=dmg;
@@ -983,12 +1031,62 @@ this.waveSpawnQueue--;
 }
 }
 };
+VG.prototype._closestNode=function(x,z,key){
+var arr=this.spawnNodes&&this.spawnNodes[key]?this.spawnNodes[key]:null;
+if(!arr||arr.length===0)return null;
+var bi=0,bd=Infinity;
+for(var i=0;i<arr.length;i++){var dx=arr[i][0]-x,dz=arr[i][1]-z,d=dx*dx+dz*dz;if(d<bd){bd=d;bi=i;}}
+return arr[bi];
+};
+VG.prototype._pickCombatNode=function(ep,pp){
+var list=(this.spawnNodes&&this.spawnNodes.flank&&this.spawnNodes.flank.length)?this.spawnNodes.flank:(this.spawnNodes&&this.spawnNodes.patrol?this.spawnNodes.patrol:null);
+if(!list||list.length===0)return null;
+var best=null,bestScore=-Infinity;
+for(var i=0;i<list.length;i++){
+var nx=list[i][0],nz=list[i][1];
+var pDx=nx-pp.x,pDz=nz-pp.z,pD=Math.sqrt(pDx*pDx+pDz*pDz);
+if(pD<7||pD>24)continue; // keep nodes around fight, not too close/far
+var eDx=nx-ep.x,eDz=nz-ep.z,eD=Math.sqrt(eDx*eDx+eDz*eDz);
+if(eD<2)continue;
+var score=(22-pD)*1.25-eD*0.45+Math.random()*2.2;
+if(score>bestScore){bestScore=score;best=list[i];}
+}
+return best||list[Math.floor(Math.random()*list.length)];
+};
+VG.prototype._hasLOS=function(from,to){
+var dir=new THREE.Vector3().subVectors(to,from),dist=dir.length();
+if(dist<.01)return true;
+dir.normalize();
+var rc=new THREE.Raycaster(from,dir,.2,dist);
+return rc.intersectObjects(this.wM,false).length===0;
+};
+VG.prototype._botShootRay=function(from,to,e,bt,dmg){
+bt=bt||DATA.botTypes[(e&&e.type)||0]||DATA.botTypes[0];
+var dir=new THREE.Vector3().subVectors(to,from).normalize();
+var spread=bt.spread||.06;
+dir.x+=(Math.random()-.5)*spread;dir.y+=(Math.random()-.5)*spread*.55;dir.z+=(Math.random()-.5)*spread;
+dir.normalize();
+var rc=new THREE.Raycaster(from,dir,.1,95);
+var hits=rc.intersectObjects(this.wM,false);
+var endPt=hits.length?hits[0].point.clone():rc.ray.at(95,new THREE.Vector3());
+this._tracer(from.clone(),endPt);
+var toVec=new THREE.Vector3().subVectors(to,from);
+var shotVec=new THREE.Vector3().subVectors(endPt,from);
+var shotLen=Math.max(.001,shotVec.length());
+var shotDir=shotVec.clone().normalize();
+var proj=Math.max(0,Math.min(shotLen,toVec.dot(shotDir)));
+var closest=from.clone().addScaledVector(shotDir,proj);
+var miss=closest.distanceTo(to);
+if(miss<1.1)this.takeDmg(dmg||10);
+this._sndEnemyShot();
+};
 VG.prototype.updateEnemies=function(dt){
 this._updateWaves(dt);
 var md=this._mode();
 var now=this.clock.getElapsedTime(),pP=this.cam.position;
 for(var i=this.enemies.length-1;i>=0;i--){
 var e=this.enemies[i];if(!e||!e.mesh)continue;
+if(!e.beh)e.beh={state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0};
 var ep=e.mesh.position,dx=pP.x-ep.x,dz=pP.z-ep.z,dist=Math.sqrt(dx*dx+dz*dz);
 var bt=DATA.botTypes[e.type]||DATA.botTypes[0];
 var spd=bt.speed*(md.botSpeedMul||1);
@@ -1024,6 +1122,35 @@ var sx=-dz*inv*spd*.4,sz=dx*inv*spd*.4;
 /* Alternate strafe direction based on enemy index */
 if(i%2===0){mx+=sx;mz+=sz;}else{mx-=sx;mz-=sz;}
 }
+/* Tactical navigation: patrol + flank when player not directly visible. */
+if(!e.nav)e.nav={node:null,repath:0,strafeDir:Math.random()<.5?-1:1};
+e.nav.repath-=dt;
+var fromV=new THREE.Vector3(ep.x,ep.y+.6,ep.z);
+var toV=new THREE.Vector3(pP.x,pP.y,pP.z);
+var hasLOS=this._hasLOS(fromV,toV);
+if(!hasLOS||dist>24){
+if(e.nav.repath<=0||!e.nav.node){
+var pool=(dist>22&&this.spawnNodes&&this.spawnNodes.flank)?'flank':'patrol';
+e.nav.node=this._closestNode(pP.x+(Math.random()<.5?-8:8),pP.z+(Math.random()<.5?-8:8),pool)||this._closestNode(pP.x,pP.z,'patrol');
+e.nav.repath=.9+Math.random()*.9;
+}
+if(e.nav.node){
+var ndx=e.nav.node[0]-ep.x,ndz=e.nav.node[1]-ep.z,nd=Math.sqrt(ndx*ndx+ndz*ndz);
+if(nd>1){mx+=(ndx/nd)*spd*.95;mz+=(ndz/nd)*spd*.95;}
+else e.nav.node=null;
+}
+}else{
+e.nav.node=null;
+if(e.beh.stateT<=0&&Math.random()<.22){
+var cN=this._pickCombatNode(ep,pP);
+if(cN){e.nav.node=cN;e.nav.repath=.8+Math.random()*1.4;e.beh.state='reposition';e.beh.stateT=.65+Math.random()*1.2;}
+}
+}
+e.beh.stateT-=dt;
+if(e.beh.state==='reposition'&&e.nav.node===null)e.beh.state='seek';
+if(e.beh.stateT<=0&&e.beh.state!=='reposition'){
+e.beh.state='seek';e.beh.stateT=.9+Math.random()*1.3;
+}
 
 /* Separation from other enemies */
 for(var j=0;j<this.enemies.length;j++){if(i===j||!this.enemies[j].mesh)continue;var op=this.enemies[j].mesh.position;var ssx=ep.x-op.x,ssz=ep.z-op.z,sd2=Math.sqrt(ssx*ssx+ssz*ssz);if(sd2<2.8&&sd2>.01){mx+=(ssx/sd2)*3.5;mz+=(ssz/sd2)*3.5;}}
@@ -1046,64 +1173,37 @@ ep.x=Math.max(-emh,Math.min(emh,ep.x));ep.z=Math.max(-emh,Math.min(emh,ep.z));
 /* Leg animation */
 if(Math.abs(mx)>.01||Math.abs(mz)>.01){e.legP+=dt*8;var ls=Math.sin(e.legP)*.15;var pts=e.mesh.userData.parts;if(pts&&pts.length>=16){if(pts[12])pts[12].position.z=ls*.15;if(pts[13])pts[13].position.z=-ls*.15;}}
 
-/* Weapon-class shooting behavior */
+/* Weapon-class shooting behavior (same hitscan feel as player). */
+fromV.set(ep.x,ep.y+.6,ep.z);toV.set(pP.x,pP.y,pP.z);hasLOS=this._hasLOS(fromV,toV);
 var sr=bt.fireRate;
-var maxRange=e.type===2?18:e.type===1?30:e.type===3?65:45;
+var maxRange=e.type===2?19:e.type===1?32:e.type===3?70:48;
 maxRange=Math.floor(maxRange*(md.botRangeMul||1));
-if(md.waves)maxRange=Math.floor(maxRange*1.4);
+if(md.waves)maxRange=Math.floor(maxRange*1.35);
 /* Shotgun bots only fire when close enough */
-var shotgunRange=md.waves?22:18;
+var shotgunRange=md.waves?23:19;
 var canFire=(e.type===2)?dist<shotgunRange:dist<maxRange;
-/* Line-of-sight check — bots cannot shoot through walls */
-if(canFire){
-var fromV=new THREE.Vector3(ep.x,ep.y+.6,ep.z);
-var toV=new THREE.Vector3(pP.x,pP.y,pP.z);
-var losDir=new THREE.Vector3().subVectors(toV,fromV);
-var losDist=losDir.length();
-if(losDist>.01){
-losDir.normalize();
-var losRc=new THREE.Raycaster(fromV,losDir,.2,losDist);
-var losHits=losRc.intersectObjects(this.wM,false);
-if(losHits.length>0)canFire=false;
-}
-}
-if(canFire&&now-e.lastShot>sr){
-e.lastShot=now+Math.random()*.15;
+if(canFire&&hasLOS&&now-e.lastShot>sr){
+if(e.beh.burst<=0)e.beh.burst=(e.type===3?1:(e.type===2?2:2+Math.floor(Math.random()*3)));
+e.lastShot=now+Math.random()*.12+(e.type===3?.12:0);
 /* Calculate damage with distance falloff matching weapon type */
 var eDmg=this._botDistDmg(bt.baseDmg,dist,e.type);
 if(e.dmgMul)eDmg=Math.floor(eDmg*e.dmgMul);
 if(e.type===2&&bt.pellets){
 /* Shotgun bot fires multiple pellets */
-for(var pp=0;pp<bt.pellets;pp++)this._eShoot(ep.clone(),pP.clone(),e.type,eDmg,bt);
+for(var pp=0;pp<bt.pellets;pp++)this._botShootRay(fromV.clone(),toV.clone(),e,bt,eDmg);
 }else{
-this._eShoot(ep.clone(),pP.clone(),e.type,eDmg,bt);
+this._botShootRay(fromV.clone(),toV.clone(),e,bt,eDmg);
 }
+e.beh.burst--;
+if(e.beh.burst<=0)e.lastShot+=.16+Math.random()*.25;
 }
-}
-/* Update projectiles */
-for(var i=this.proj.length-1;i>=0;i--){
-var p=this.proj[i];if(!p||!p.mesh){this.proj.splice(i,1);continue;}
-p.mesh.position.addScaledVector(p.dir,p.spd*dt);p.life-=dt;
-var hw2=false,pB=new THREE.Box3().setFromCenterAndSize(p.mesh.position,new THREE.Vector3(.3,.3,.3));
-for(var w=0;w<this.wB.length;w++){if(pB.intersectsBox(this.wB[w])){hw2=true;break;}}
-var pdx=p.mesh.position.x-pP.x,pdy=p.mesh.position.y-pP.y,pdz=p.mesh.position.z-pP.z;
-var pD=Math.sqrt(pdx*pdx+pdy*pdy+pdz*pdz);
-if(pD<1.3){this.takeDmg(p.dmg||10);this.scene.remove(p.mesh);this.proj.splice(i,1);}
-else if(p.life<=0||hw2){this.scene.remove(p.mesh);this.proj.splice(i,1);}
 }
 /* Update tracers */
 for(var i=this.tracers.length-1;i>=0;i--){var t=this.tracers[i];t.life-=dt;if(t.mat)t.mat.opacity=Math.max(0,t.life/.07);if(t.life<=0){this.scene.remove(t.mesh);if(t.mesh.geometry)t.mesh.geometry.dispose();if(t.mat)t.mat.dispose();this.tracers.splice(i,1);}}
 };
 VG.prototype._eShoot=function(from,to,type,dmg,bt){
-bt=bt||DATA.botTypes[type]||DATA.botTypes[0];
-var sz=bt.projSize||.12,col=bt.projColor||0xff3300;
-var mesh=new THREE.Mesh(new THREE.SphereGeometry(sz,4,4),new THREE.MeshBasicMaterial({color:col}));
-from.y+=.6;mesh.position.copy(from);this.scene.add(mesh);
-var dir=new THREE.Vector3().subVectors(to,from).normalize();
-var spread=bt.spread||.06;
-dir.x+=(Math.random()-.5)*spread;dir.z+=(Math.random()-.5)*spread;dir.normalize();
-this.proj.push({mesh:mesh,dir:dir,life:3.5,type:type||0,dmg:dmg||10,spd:bt.projSpeed||30});
-this._sndEnemyShot();
+/* Deprecated: kept as compatibility wrapper; bots now shoot hitscan rays like the player. */
+this._botShootRay(from,to,null,bt||DATA.botTypes[type]||DATA.botTypes[0],dmg||10);
 };
 VG.prototype._dropPickup=function(pos,type){
   if(!this.pickups)this.pickups=[];
