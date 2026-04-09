@@ -79,7 +79,7 @@ assault:{id:'assault',label:'ASSAUT',desc:'Affrontement soutenu contre des bots 
 domination:{id:'domination',label:'DOMINATION',desc:'Contrôlez l’atrium central pour marquer 100 points',theme:'training',initialBots:10,respawn:true,respawnDelay:1.1,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,domination:true,scoreTarget:100,showHpBars:true}
 };
 this.gameMode='training';
-this.mapVersion='ARENA V5 FLOW';
+this.mapVersion='ARENA V6 COMP';
 this.modeScore={player:0,bots:0};
 /* Wave system state */
 this.wave=0;this.waveActive=false;this.waveRemaining=0;this.waveSpawnQueue=0;this._waveTimer=0;this._waveBreak=0;this._spawnAccum=0;
@@ -288,7 +288,7 @@ this._W(sx,sy,sz,rw,.35,rd,c);
 }
 };
 VG.prototype._buildArena=function(){
-/* COMPETITIVE TILE BLOCKOUT V5 — cleaner lanes, useful covers only, less visual/map clutter. */
+/* COMPETITIVE TILE BLOCKOUT V6 — lanes lisibles + verticalité utile + spawns protégés. */
 var W=0x1b2a38,C=0x244055,CR=0x335a74,RM=0x2e6a90;
 var tile=3;
 var layout=[
@@ -378,20 +378,28 @@ if(this.spawnNodes.high.length<3)this.spawnNodes.high.push([0,0],[-6,6],[6,-6]);
 if(this.spawnNodes.player.length<4)this.spawnNodes.player.push([-halfW+6,-halfH+6],[-halfW+6,halfH-6]);
 if(this.spawnNodes.enemy.length<4)this.spawnNodes.enemy.push([halfW-6,halfH-6],[halfW-6,-halfH+6]);
 
-// minimal landmarks to keep orientation without blocking routes
-for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*4){
-this._D(lx,.04,-halfH+tile*.9,1.8,.04,.14,0x00a6ff);
-this._D(lx,.04,halfH-tile*.9,1.8,.04,.14,0x6add59);
+// visual lane guides
+for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*2){this._D(lx,.04,-halfH+tile*1.1,1.4,.04,.12,0x00a6ff);this._D(lx,.04,halfH-tile*1.1,1.4,.04,.12,0x6add59);} 
+for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*2){this._D(-halfW+tile*1.1,.04,lz,.12,.04,1.4,0xa76bff);this._D(halfW-tile*1.1,.04,lz,.12,.04,1.4,0xffb24a);} 
+// corridor covers: symmetric and intentional
+for(var c=-21;c<=21;c+=7){
+if(c!==0){
+this._W(c,1,-9,2,2,2.2,CR);this._W(c,1,9,2,2,2.2,CR);
+this._W(-9,1,c,2.2,2,2,CR);this._W(9,1,c,2.2,2,2,CR);
 }
-for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*4){
-this._D(-halfW+tile*.9,.04,lz,.14,.04,1.8,0xa76bff);
-this._D(halfW-tile*.9,.04,lz,.14,.04,1.8,0xffb24a);
 }
-// only a few meaningful central covers
-this._W(0,1,-9,2.2,2,2.2,CR);
-this._W(0,1,9,2.2,2,2.2,CR);
-this._W(-9,1,0,2.2,2,2.2,CR);
-this._W(9,1,0,2.2,2,2.2,CR);
+// side catwalks + ramps (controlled verticality)
+this._W(-24,2.4,0,4,1,16,0x264860);this._W(24,2.4,0,4,1,16,0x264860);
+this._addRamp(-27,-8,-24,0,2.4,3.2,RM);this._addRamp(-27,8,-24,0,2.4,3.2,RM);
+this._addRamp(27,-8,24,0,2.4,3.2,RM);this._addRamp(27,8,24,0,2.4,3.2,RM);
+// protected spawn bunkers (hard LOS break at exit)
+this._W(-30,1.8,-24,2,3.6,12,W);this._W(-24,1.8,-30,12,3.6,2,W);this._W(-26,1.2,-23,4,2.4,2,CR);
+this._W(30,1.8,24,2,3.6,12,W);this._W(24,1.8,30,12,3.6,2,W);this._W(26,1.2,23,4,2.4,2,CR);
+this._W(-30,1.8,24,2,3.6,12,W);this._W(-24,1.8,30,12,3.6,2,W);this._W(-26,1.2,23,4,2.4,2,CR);
+this._W(30,1.8,-24,2,3.6,12,W);this._W(24,1.8,-30,12,3.6,2,W);this._W(26,1.2,-23,4,2.4,2,CR);
+// lane accents
+for(var lx=-27;lx<=27;lx+=6){this._D(lx,.04,-30,1.6,.04,.12,0x00a8ff);this._D(lx,.04,30,1.6,.04,.12,0x66dd55);}
+for(var lz=-27;lz<=27;lz+=6){this._D(-30,.04,lz,.12,.04,1.6,0xa76bff);this._D(30,.04,lz,.12,.04,1.6,0xffaa49);}
 };
 
 
@@ -1023,7 +1031,10 @@ var tc=Math.abs(x-this.cam.position.x)<10&&Math.abs(z-this.cam.position.z)<10;
 ok=!tc&&this._clr(x,z);}while(!ok&&att<45);
 var gl=this._groundAt(x,z,10,.5);
 r.mesh.position.set(x,gl+1,z);this.scene.add(r.mesh);
-this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite,beh:{state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0,stuckT:0,lastX:x,lastZ:z}});
+var baseSkill=.9+(md.waves?.08:0)+((md.id==='assault'||md.id==='survival_plus')?.08:0);
+if(this.mission.active)baseSkill+=Math.min(.22,(this.mission.stage-1)*.03);
+var aiSkill=Math.max(.75,Math.min(1.35,baseSkill+(Math.random()-.5)*.2));
+this.enemies.push({mesh:r.mesh,hp:scaledHp,maxHp:scaledHp,lastShot:this.clock.getElapsedTime()+Math.random()*2,type:t,legP:Math.random()*Math.PI*2,name:r.name,dmgMul:dmgMul,elite:isElite,aiSkill:aiSkill,nextThink:this.clock.getElapsedTime()+.22+Math.random()*.28,beh:{state:'seek',stateT:.8+Math.random()*1.4,burst:0,repath:0,stuckT:0,lastX:x,lastZ:z}});
 };
 VG.prototype.dmgEnemy=function(en,dmg,isHeadshot){
 if(!en||!en.mesh)return;en.hp-=dmg;
@@ -1167,7 +1178,8 @@ return rc.intersectObjects(this.wM,false).length===0;
 VG.prototype._botShootRay=function(from,to,e,bt,dmg){
 bt=bt||DATA.botTypes[(e&&e.type)||0]||DATA.botTypes[0];
 var dir=new THREE.Vector3().subVectors(to,from).normalize();
-var spread=bt.spread||.06;
+var skill=(e&&e.aiSkill)?e.aiSkill:1;
+var spread=Math.max(.012,(bt.spread||.06)/Math.max(.72,skill));
 dir.x+=(Math.random()-.5)*spread;dir.y+=(Math.random()-.5)*spread*.55;dir.z+=(Math.random()-.5)*spread;
 dir.normalize();
 var rc=new THREE.Raycaster(from,dir,.1,95);
@@ -1183,7 +1195,8 @@ var shotDir=shotVec.clone().normalize();
 var proj=Math.max(0,Math.min(shotLen,toVec.dot(shotDir)));
 var closest=from.clone().addScaledVector(shotDir,proj);
 var miss=closest.distanceTo(to);
-if(miss<1.1)this.takeDmg(dmg||10);
+var hitTol=.95+Math.min(.25,Math.max(0,((e&&e.aiSkill)||1)-1)*.22);
+if(miss<hitTol)this.takeDmg(dmg||10);
 this._sndEnemyShot();
 };
 VG.prototype.updateEnemies=function(dt){
@@ -1285,16 +1298,17 @@ if(Math.abs(mx)>.01||Math.abs(mz)>.01){e.legP+=dt*8;var ls=Math.sin(e.legP)*.15;
 /* Weapon-class shooting behavior (same hitscan feel as player). */
 var muzzle=(e.mesh.userData&&e.mesh.userData.weaponMuzzleLocal)?e.mesh.userData.weaponMuzzleLocal.clone().applyMatrix4(e.mesh.matrixWorld):null;
 fromV.copy(muzzle||new THREE.Vector3(ep.x,ep.y+.6,ep.z));toV.set(pP.x,pP.y,pP.z);hasLOS=this._hasLOS(fromV,toV);
-var sr=bt.fireRate;
+var sr=Math.max(.16,bt.fireRate/(.92+aiSkill*.14));
 var maxRange=e.type===2?19:e.type===1?32:e.type===3?70:48;
 maxRange=Math.floor(maxRange*(md.botRangeMul||1)*arcadeMul);
 if(md.waves)maxRange=Math.floor(maxRange*1.35);
 /* Shotgun bots only fire when close enough */
 var shotgunRange=md.waves?23:19;
 var canFire=(e.type===2)?dist<shotgunRange:dist<maxRange;
-if(canFire&&hasLOS&&now-e.lastShot>sr){
+if(canFire&&hasLOS&&now-e.lastShot>sr&&now>=(e.nextThink||0)){
 if(e.beh.burst<=0)e.beh.burst=(e.type===3?1:(e.type===2?2:2+Math.floor(Math.random()*3)));
 e.lastShot=now+Math.random()*.12+(e.type===3?.12:0);
+e.nextThink=now+Math.max(.08,.2-aiSkill*.06)+Math.random()*.08;
 /* Calculate damage with distance falloff matching weapon type */
 var eDmg=this._botDistDmg(bt.baseDmg,dist,e.type);
 if(e.dmgMul)eDmg=Math.floor(eDmg*e.dmgMul);
