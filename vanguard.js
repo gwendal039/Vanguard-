@@ -79,10 +79,12 @@ assault:{id:'assault',label:'ASSAUT',desc:'Affrontement soutenu contre des bots 
 domination:{id:'domination',label:'DOMINATION',desc:'Contrôlez l’atrium central pour marquer 100 points',theme:'training',initialBots:10,respawn:true,respawnDelay:1.1,botSpeedMul:1,botRangeMul:1,botAggro:1,botDamageMul:1,domination:true,scoreTarget:100,showHpBars:true}
 };
 this.gameMode='training';
+this.mapVersion='ARENA V4 TILE';
 this.modeScore={player:0,bots:0};
 /* Wave system state */
 this.wave=0;this.waveActive=false;this.waveRemaining=0;this.waveSpawnQueue=0;this._waveTimer=0;this._waveBreak=0;this._spawnAccum=0;
 this._actx=null;this._menuDrone=null;this._combatDrone=null;
+this.mm={canvas:null,ctx:null,size:180};
 this.initWorld();this.initUI();this.initEvents();
 this.cam.position.set(0,15,0);
 this.loop();
@@ -285,6 +287,79 @@ this._W(sx,sy,sz,rw,.35,rd,c);
 }
 };
 VG.prototype._buildArena=function(){
+/* COMPETITIVE TILE BLOCKOUT V3 — deterministic layout, no fake passages, no trap pits, clear 3-route flow. */
+var W=0x1b2a38,C=0x244055,CR=0x335a74,RM=0x2e6a90;
+var tile=3;
+var layout=[
+'#######################',
+'#A....#.....#.....#..B#',
+'#.###.#.===.#.===.#.###',
+'#.....#.....#.....#...#',
+'#.###.#####.#.#####.#.#',
+'#...#.....#.#.#.....#.#',
+'###.#.===.#.#.#.===.#.#',
+'#...#.....#...#.....#.#',
+'#.#####.####^####.#####',
+'#.....#...F...#...#...#',
+'#.===.#.#####.#.===.#.#',
+'#.....#..H.H..#.....#.#',
+'#####.###...###.#####.#',
+'#.....#..H.H..#.....#.#',
+'#.===.#.#####.#.===.#.#',
+'#...#...F...#...#.....#',
+'#####.####^####.#####.#',
+'#.#.....#...#.....#...#',
+'#.#.===.#.#.#.===.#.###',
+'#.#.....#.#.#.....#...#',
+'#.#####.#.#####.###.#.#',
+'#...#.....#.....#....B#',
+'#######################'
+];
+var rows=layout.length,cols=layout[0].length;
+var halfW=cols*tile*.5,halfH=rows*tile*.5;
+this.mapHalf=Math.max(34,Math.ceil(Math.max(halfW,halfH))+2);
+this.spawnNodes={player:[],enemy:[],high:[],patrol:[],flank:[]};
+
+// global safety floor + border shell
+this._D(0,.02,0,cols*tile+8,.04,rows*tile+8,0x0f1823,0x001422);
+this._W(0,4,-halfH-1,cols*tile+8,8,2,W);this._W(0,4,halfH+1,cols*tile+8,8,2,W);
+this._W(-halfW-1,4,0,2,8,rows*tile+8,W);this._W(halfW+1,4,0,2,8,rows*tile+8,W);
+
+var walk=[];
+var toWorld=function(tx,tz){return{x:(tx-cols/2+0.5)*tile,z:(tz-rows/2+0.5)*tile};};
+for(var z=0;z<rows;z++){
+for(var x=0;x<cols;x++){
+var ch=layout[z].charAt(x);var p=toWorld(x,z);
+if(ch!=='#'){
+  walk.push([p.x,p.z]);
+  this._D(p.x,.03,p.z,tile,.05,tile,0x111c28,0x001a2a);
+}
+if(ch==='#'){
+  this._W(p.x,1.8,p.z,tile,3.6,tile,W);
+}else if(ch==='='){
+  this._W(p.x,.9,p.z,tile*.84,1.8,tile*.84,CR);
+}else if(ch==='^'){
+  this._W(p.x,1.5,p.z,tile,3,tile,C);
+  this._addRamp(p.x-tile*1.4,p.z,p.x,p.z,1.5,tile*.9,RM);
+  this._addRamp(p.x+tile*1.4,p.z,p.x,p.z,1.5,tile*.9,RM);
+  this.spawnNodes.high.push([p.x,p.z]);
+}else if(ch==='A'){
+  this.spawnNodes.player.push([p.x,p.z]);
+  // spawn pocket with broken LOS and two exits
+  this._W(p.x-tile*1.1,1.6,p.z,1.2,3.2,tile*1.9,W);
+  this._W(p.x,1.6,p.z-tile*1.1,tile*1.9,3.2,1.2,W);
+  this._W(p.x+tile*.6,1.0,p.z+tile*.2,1.2,2.0,1.2,CR);
+}else if(ch==='B'){
+  this.spawnNodes.enemy.push([p.x,p.z]);
+  this._W(p.x+tile*1.1,1.6,p.z,1.2,3.2,tile*1.9,W);
+  this._W(p.x,1.6,p.z+tile*1.1,tile*1.9,3.2,1.2,W);
+  this._W(p.x-tile*.6,1.0,p.z-tile*.2,1.2,2.0,1.2,CR);
+}else if(ch==='F'){
+  this.spawnNodes.flank.push([p.x,p.z]);
+  this._W(p.x,.8,p.z,tile*.6,1.6,tile*.6,0x2b4d67);
+}else if(ch==='H'){
+  this.spawnNodes.high.push([p.x,p.z]);
+  this._W(p.x,1.1,p.z,tile*.8,2.2,tile*.8,0x29445d);
 /* KRUNKER-STYLE COMPACT PVP ARENA — sealed geometry, deliberate lanes, strong spawn bunkers. */
 var W=0x1d2a38,C=0x253749,CR=0x334f66,RM=0x2f6282,FL=0x0c141d;
 this.mapHalf=34;
@@ -323,6 +398,24 @@ this._W(bx,4.35,bz,6,0.7,6,CR); // roof cap
 this._W(bx+4.3,1,bz,1.4,2,4,0x131f2b); // doorway blocker to avoid ambiguous slit
 this._W(bx-4.3,1,bz,1.4,2,4,0x131f2b);
 }
+}
+
+// auto-generated patrol network from traversable cells (regular grid sampling)
+for(var i=0;i<walk.length;i++){
+var wx=walk[i][0],wz=walk[i][1];
+if(Math.round((wx+wz)/tile)%2===0)this.spawnNodes.patrol.push([wx,wz]);
+}
+// fallback node guarantees
+if(this.spawnNodes.flank.length<6){
+this.spawnNodes.flank.push([-12,0],[12,0],[0,-12],[0,12],[-9,9],[9,-9]);
+}
+if(this.spawnNodes.high.length<3)this.spawnNodes.high.push([0,0],[-6,6],[6,-6]);
+if(this.spawnNodes.player.length<4)this.spawnNodes.player.push([-halfW+6,-halfH+6],[-halfW+6,halfH-6]);
+if(this.spawnNodes.enemy.length<4)this.spawnNodes.enemy.push([halfW-6,halfH-6],[halfW-6,-halfH+6]);
+
+// visual lane guides
+for(var lx=-halfW+tile;lx<=halfW-tile;lx+=tile*2){this._D(lx,.04,-halfH+tile*1.1,1.4,.04,.12,0x00a6ff);this._D(lx,.04,halfH-tile*1.1,1.4,.04,.12,0x6add59);} 
+for(var lz=-halfH+tile;lz<=halfH-tile;lz+=tile*2){this._D(-halfW+tile*1.1,.04,lz,.12,.04,1.4,0xa76bff);this._D(halfW-tile*1.1,.04,lz,.12,.04,1.4,0xffb24a);} 
 // corridor covers: symmetric and intentional
 for(var c=-21;c<=21;c+=7){
 if(c!==0){
@@ -1413,7 +1506,7 @@ document.addEventListener('mouseup',function(e){if(e.button===0)self.md=false;el
 document.addEventListener('contextmenu',function(e){if(self.state==='PLAYING'||document.pointerLockElement)e.preventDefault();});
 };
 /* UI */
-VG.prototype.initUI=function(){this._initObj();this.updateMenuUI();if(this.sd.firstTime)this._showTut();};
+VG.prototype.initUI=function(){this._initObj();this.updateMenuUI();if(this.sd.firstTime)this._showTut();this.mm.canvas=document.getElementById('hud-minimap');this.mm.ctx=this.mm.canvas?this.mm.canvas.getContext('2d'):null;};
 VG.prototype._showTut=function(){var el=document.getElementById('tutorial-overlay');if(el){el.classList.remove('hidden');el.classList.add('active');}};
 VG.prototype.closeTutorial=function(){var el=document.getElementById('tutorial-overlay');if(el){el.classList.add('hidden');el.classList.remove('active');}this.sd.firstTime=false;this.save();};
 VG.prototype._flash=function(msg,color){var el=document.getElementById('error-banner');if(!el)return;el.textContent=msg;if(color)el.style.borderColor=color;else el.style.borderColor='#ff4444';el.classList.add('show');setTimeout(function(){el.classList.remove('show');},2200);};
@@ -1451,6 +1544,7 @@ else if(md.waves)ob.innerText='MODE SURVIE — VAGUES PROGRESSIVES';
 else if(md.id==='assault')ob.innerText='ASSAUT — PRESSION MAXIMALE';
 else ob.innerText='ENTRAÎNEMENT — SANDBOX';
 if(this.P.spawnShieldT>0)ob.innerText+='  |  BOUCLIER SPAWN '+this.P.spawnShieldT.toFixed(1)+'s';
+ob.innerText+='  |  '+(this.mapVersion||'ARENA');
 }
 };
 VG.prototype.popLoadout=function(){
@@ -1588,11 +1682,37 @@ var rl3=DATA.rarityLabel[res.rarity]||'';
 self._flash(rl3+' \u2014 '+res.name,hexA);
 }},65);
 };
+VG.prototype._drawMinimap=function(){
+if(!this.mm||!this.mm.ctx||!this.mm.canvas)return;
+var ctx=this.mm.ctx,w=this.mm.canvas.width,h=this.mm.canvas.height;
+ctx.clearRect(0,0,w,h);
+ctx.fillStyle='rgba(4,14,22,.92)';ctx.fillRect(0,0,w,h);
+ctx.strokeStyle='rgba(0,229,255,.4)';ctx.strokeRect(.5,.5,w-1,h-1);
+var half=this.mapHalf||34;
+var toMM=function(x,z){return[(x/half*.5+.5)*w,(-z/half*.5+.5)*h];};
+ctx.fillStyle='rgba(120,160,190,.35)';
+for(var i=0;i<this.wB.length;i++){
+var b=this.wB[i];if(!b)continue;
+var p1=toMM(b.min.x,b.min.z),p2=toMM(b.max.x,b.max.z);
+var x=Math.min(p1[0],p2[0]),y=Math.min(p1[1],p2[1]),rw=Math.max(1,Math.abs(p2[0]-p1[0])),rh=Math.max(1,Math.abs(p2[1]-p1[1]));
+ctx.fillRect(x,y,rw,rh);
+}
+for(var ei=0;ei<this.enemies.length;ei++){
+var ep=this.enemies[ei]&&this.enemies[ei].mesh?this.enemies[ei].mesh.position:null;if(!ep)continue;
+var pe=toMM(ep.x,ep.z);ctx.fillStyle='rgba(255,80,80,.95)';ctx.fillRect(pe[0]-2,pe[1]-2,4,4);
+}
+var cp=this.cam.position,pp=toMM(cp.x,cp.z);
+ctx.fillStyle='rgba(0,229,255,1)';ctx.beginPath();ctx.arc(pp[0],pp[1],4,0,Math.PI*2);ctx.fill();
+ctx.strokeStyle='rgba(0,229,255,.85)';ctx.beginPath();
+var yaw=this.cam.rotation.y;ctx.moveTo(pp[0],pp[1]);ctx.lineTo(pp[0]-Math.sin(yaw)*12,pp[1]-Math.cos(yaw)*12);ctx.stroke();
+ctx.fillStyle='rgba(180,230,255,.9)';ctx.font='11px Rajdhani';ctx.fillText(this.mapVersion||'ARENA',8,14);
+};
+
 /* LOOP */
 VG.prototype.loop=function(){
 var self=this;requestAnimationFrame(function(){self.loop();});
 var dt=Math.min(this.clock.getDelta(),.05);
-if(this.state==='PLAYING'){this.updatePhys(dt);this.handleShoot();this.updateEnemies(dt);this._updatePickups(dt);this.updateHUD();}
+if(this.state==='PLAYING'){this.updatePhys(dt);this.handleShoot();this.updateEnemies(dt);this._updatePickups(dt);this.updateHUD();this._drawMinimap();}
 if(this.state==='PLAYING')this._updateModeObjectives(dt);
 this.ren.render(this.scene,this.cam);
 };
